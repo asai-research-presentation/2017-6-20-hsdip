@@ -767,80 +767,59 @@ $[f=g+h, \hat{h}^{FF}]$ --- Computing 2 different heuristics
 
 * Simple Dynamic Configuration for Overall Performance
 
+IPC+Zerocost results
+
+#+begin_container-fluid
+#+begin_row-fluid
+#+begin_span6
+|---+----------------------------------------------------+-------+-------|
+|   | *Single heuristics*                                | LMcut |   M&S |
+|---+----------------------------------------------------+-------+-------|
+| / | $[f,h,\text{fifo}]$                                |   814 |   771 |
+|   | $[f,h,\text{lifo}]$                                |   844 |   797 |
+| / | $[f,h,\text{Random}]$                              | 820.8 | 777.1 |
+|   | $[f,h,\langle d \rangle,\text{fifo}]$              |   855 |   789 |
+|   | $[f,h,\langle d \rangle,\text{lifo}]$              |   839 |   775 |
+|   | $[f,h,\langle d \rangle,\text{Random}]$            | 859.5 | 793.7 |
+| / | [0.3em] Distance-to-Go                             |       |       |
+| / | $[f,\hh,\text{fifo}]$                              |   829 |   785 |
+| / | $[f,\hh,\text{lifo}]$                              |   837 |   780 |
+| / | $[f,\hh,\text{Random}]$                            |  835. | 777.7 |
+| / | $[f,h,\hh,\text{fifo}]$                            |   841 |   783 |
+| / | $[f,h,\hh,\text{lifo}]$                            |   844 |   781 |
+| / | $[f,h,\hh,\text{Random}]$                          | 840.6 | 778.7 |
+|---+----------------------------------------------------+-------+-------|
+|   | *Multi heuristics*                                 |       |       |
+| / | $[f,\hat{h}^{FF},\text{fifo}]$                     |   901 |   794 |
+| / | $[f,\hat{h}^{FF},\text{lifo}]$                     |   902 |   788 |
+| / | $[f,\hat{h}^{FF},\text{Random}]$                   | 904.7 | 794.9 |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{fifo}]$   |   903 |   794 |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{lifo}]$   |   902 |   790 |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ | 906.2 | 794.4 |
+|---+----------------------------------------------------+-------+-------|
+#+end_span6
+#+begin_span6
 |---+-------------------------------------------------------------------------------------------------+---------+---------|
-|   | IPC+Zerocost results included                                                                   |   LMcut |     M&S |
+|   | Dynamic Configuration                                                                           | LMcut   | M&S     |
 |---+-------------------------------------------------------------------------------------------------+---------+---------|
-| / | $[f,h,\text{fifo}]$                                                                             |     814 |     771 |
-|   | $[f,h,\text{lifo}]$                                                                             |     844 |     797 |
-| / | $[f,h,\text{Random}]$                                                                           |   820.8 |   777.1 |
-|   | $[f,h,\langle d \rangle,\text{fifo}]$                                                           |     855 |     789 |
-|   | $[f,h,\langle d \rangle,\text{lifo}]$                                                           |     839 |     775 |
-|   | $[f,h,\langle d \rangle,\text{Random}]$                                                         |   859.5 |   793.7 |
-| / | [0.3em] Distance-to-Go                                                                          |         |         |
-| / | $[f,\hh,\text{fifo}]$                                                                           |     829 |     785 |
-| / | $[f,\hh,\text{lifo}]$                                                                           |     837 |     780 |
-| / | $[f,\hh,\text{Random}]$                                                                         |    835. |   777.7 |
-| / | $[f,h,\hh,\text{fifo}]$                                                                         |     841 |     783 |
-| / | $[f,h,\hh,\text{lifo}]$                                                                         |     844 |     781 |
-| / | $[f,h,\hh,\text{Random}]$                                                                       |   840.6 |   778.7 |
-|---+-------------------------------------------------------------------------------------------------+---------+---------|
-|   | Multi-heuristic strategies                                                                      |         |         |
-| / | $[f,\hat{h}^{FF},\text{fifo}]$                                                                  |     901 |     794 |
-| / | $[f,\hat{h}^{FF},\text{lifo}]$                                                                  |     902 |     788 |
-| / | $[f,\hat{h}^{FF},\text{Random}]$                                                                |   904.7 |   794.9 |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{fifo}]$                                                |     903 |     794 |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{lifo}]$                                                |     902 |     790 |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$                                              |   906.2 |   794.4 |
-|---+-------------------------------------------------------------------------------------------------+---------+---------|
-|   | Dynamic Configuration                                                                           |         |         |
 |   | If a problem contains zerocost actions:                                                         |         |         |
 |   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ ; Else $[f,h,\langle d \rangle,\text{lifo}]$ | *911.9* |         |
 |   |                                                                                                 |         |         |
 |   | If a problem contains zerocost actions:                                                         |         |         |
 |   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ ; Else $[f,h,\text{lifo}]$                   |         | *832.3* |
 |---+-------------------------------------------------------------------------------------------------+---------+---------|
+#+end_span6
+#+end_row-fluid
+#+end_container-fluid
 
+* Conclusion & Future Work
 
-* Contributions
-
-+ *In-depth analysis of the tiebreaking strategies*
-  + The paper contains more analyses
-    + ([h,FIFO] vs [FIFO], [h,RD,RO] vs [h,RO] etc.)
-+ *Randomized depth-based tiebreaking* in zero-cost domains
-  + *no heuristics can help* because the optimal cost is 0
-+ *Understanding of the structure of the final plateau*
-  + *Depth Bias is harmful* -- exploration vs exploitation
-
-* Future Work -- Connections to the Other Areas
-
-+ It would be applicable to Bidi search (*Award Talk*)
-+ Satisficing Search ( cf. *Yesterday talk by Richard Valenzano* )
-  + Use *ｆ／５* -- most actions become 0 cost
-    + looks like constant-error search (/＜ｆ^*+5/) unlike WA* : /＜w×ｆ^*/ 
-+ Temporal Planning/Scheduling
-  + Short actions do not increase the makespan = 0-cost actions?
-+ Can we make the exploration more efficient?
-  + *RRTs* (Rapidly exploring Random Trees) + diversity metric
-  + *MCTS* (Monte Carlo Tree Search w/ Upper Confidence Bound)
-+ "Plan Diversity is underinvestigated" --- Jorg Hoffman
-  + Exploration-based approach might also be underinvestigated?
-
-#+begin_center
-Thanks for your attention!
-#+end_center
-
-* Appendix
-
-+ Is randomness necessary? How about just round-robin loop?
-  + I consider it is possible but not tested yet.
-+ Relationship to LA^*_0 and LAMA's PLUSONE cost type? (lookahead)
-  + LA^*_0 is equivalent to FIFO, the smallest depth.
-  + PLUSONE is FIFO, and is inadmissible.
-+ Little disadvantage in positive-cost domains (depth is always 0)
-  + except: slows down expansion rate in M&S
-    + M&S eval is table lookup and quite fast
-
-
++ A* as a sequence of satisficing search on each plateau
++ Demonstrated the use of inadmissible heuristics for optimal search
++ Many potential extensions
+  + Use *plateau-limited macro actions* (cf. Marvin, but different purpose)
+  + *Plateau-limited monte-carlo random walk* (cf. Arvand)
+  + Direct analogue for model-based planners (SAT/IP/CSP-based planners)
 
 * Old evaluation                                                   :noexport:
 ** Evaluation (participants)
