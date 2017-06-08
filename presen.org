@@ -62,7 +62,7 @@ Made by guicho2.71828 (Masataro Asai)
  #+end_xlarge
  #+end_alignright
 
-* Main Topic : Optimal Graph Search
+* Main Topic : Optimal Graph Search                                :noexport:
 
 #+begin_container-fluid
 #+begin_row-fluid
@@ -168,7 +168,7 @@ There are sometimes no mention at all.
 Overall, it seems that the current rule-of-thumb is to use h-based tiebreaking.
 #+end_resume
 
-* (AAAI16) [ /h/ ] is underspecified
+* [ /h/ ] is underspecified                                          :AAAI16:
 
 *What happens if there are still /multiple/ nodes with the same /h/ ?*
 
@@ -189,15 +189,6 @@ Example -- A* with *[ /h/ , /LIFO/ ]* : Selects the nodes with /f_{min}/.
 | (current) Fast Downward                       | [ /h/, FIFO (*not documented*)] |
 |-----------------------------------------------+---------------------------------|
 
-#+begin_alignright
-#+begin_larger
-+ Details (such as 2nd-tiebreaking /X/) are *considered unimportant?*
-
-  (compared to the improvement of the heuristics, search algorithm?)
-#+end_larger
-#+end_alignright
-
-
 #+begin_resume
 However, h-based tiebreaking has a severe problem that it is still underspecified.
 What happens if there are still multiple nodes with the same h?
@@ -210,7 +201,7 @@ Both of these are not specified in the paper.
 In other words, these details are not considered important.
 #+end_resume
 
-* (AAAI16) In Fact, Tiebreaking is Quite Important 
+* In Fact, Tiebreaking is Quite Important                            :AAAI16:
 
 #+begin_larger
 #+begin_center
@@ -404,7 +395,7 @@ Another interesting example is a realistic transportation domain with fuel optim
 In such as setting, the domain will assign 0 to all action costs except drive-truck.
 #+end_resume
 
-* (AAAI16) Zero-cost actions makes /h/-Tiebreaking difficult
+* Zero-cost actions makes /h/-Tiebreaking difficult                  :AAAI16:
 
 #+begin_container-fluid
 #+begin_row-fluid
@@ -455,7 +446,7 @@ Thus, to improve upon LIFO, we should understand Final Plateau.
 
 # , and the LIFO and FIFO plays the primary role. 
 
-* (AAAI16) Understanding the Final Plateau
+* Understanding the Final Plateau                                    :AAAI16:
 
 [[png:final-plateau0]]
 
@@ -464,7 +455,7 @@ First of all, this is the traditional understanding of the search space of
 A*. However, this is actually not the case, because
 #+end_resume
 
-* (AAAI16) Understanding the Final Plateau
+* Understanding the Final Plateau                                    :AAAI16:
 
 [[png:final-plateau]]
 
@@ -475,7 +466,7 @@ Without proper tiebreaking strategy, the planner has no guidance,
 because any heuristic estimates are the same almost everywhere.
 #+end_resume
 
-* (AAAI16) Understanding the Final Plateau
+* Understanding the Final Plateau                                    :AAAI16:
 
 In positive cost domains,
 
@@ -485,7 +476,7 @@ In positive cost domains,
 In positive-cost domains, the h-based tiebreaking is useful because it provides a gradient toward the goal.
 #+end_resume
 
-* (AAAI16) But when almost all edges are 0-cost...
+* But when almost all edges are 0-cost...                            :AAAI16:
 
 [[png:final-plateau3]]
 
@@ -494,7 +485,7 @@ However, in zero-cost domains, almost all h values are 0, and h-based tiebreakin
 The problem is, how can we give a useful guidance in such a region?
 #+end_resume
 
-* (AAAI16) Depth-based Tiebreaking
+* Depth-based Tiebreaking                                            :AAAI16:
 
 [[png:final-plateau4]]
 
@@ -509,7 +500,7 @@ a plateau entrance, and its depth is 0.
 If the parent of a node have the same f and h value, then the child has a depth larger by one.
 #+end_resume
 
-* (AAAI16) Non-trivial Question: How to use the /Depth?/
+* Non-trivial Question: How to use the /Depth?/             :noexport:AAAI16:
 
 Assume h=0 (because 0≦h≦h^*=0)
 
@@ -534,7 +525,7 @@ because all edge costs are 0.
 In this context, introducing a bias in each depth is not a good idea.
 #+end_resume
 
-** Example: selecting the smallest depth?
+* FIFO: selecting the smallest depth?                                :AAAI16:
 
 # /FirstDepth/ tiebreaking strategy : ［ h, /fd/ ］
 
@@ -549,7 +540,7 @@ FirstDepth tends to search the neighborhood of plateau entrance exhaustively,
 and takes too much time to reach the appropriate depth.
 #+end_resume
 
-** Example: selecting the largest depth?
+* LIFO: selecting the largest depth?                                 :AAAI16:
 
 # /LastDepth/ tiebreaking strategy :  ［ h, /ld/ ］
 
@@ -562,7 +553,7 @@ depth-first LIFO tiebreaking.
 It may quickly pass and miss the important depth.
 #+end_resume
 
-* (AAAI16) Random Depth Tiebreaking
+* Random Depth Tiebreaking                                           :AAAI16:
 
 [[png:final-plateau7]]
 
@@ -684,14 +675,17 @@ Implication:
 #+end_larger
 #+end_span5
 #+end_row-fluid
-#+end_container-fluid
-
+#+begin_row-fluid
+#+begin_span7
 [[png:sat/sat-astar4]]
-
+#+end_span7
+#+begin_span5
 #+begin_larger
-+ Optimal solutions as long as *the first criterion* $f\;$ is admissible
++ Optimal solutions as long as *f* is admissible
 #+end_larger
-
+#+end_span5
+#+end_row-fluid
+#+end_container-fluid
 
 * Using some satisficing techniques for optimal planning
 
@@ -734,6 +728,8 @@ We created 620 zerocost instances consisting of 28 domains.
 
 * Evaluation ($h=\text{LMcut}$, Zerocost domains)
 
+5min, 4GB
+
 |                                        | ＊=FIFO | ＊=LIFO | ＊=Random |
 |----------------------------------------+---------+---------+-----------|
 | $[f,h,*]$                              |     256 |     279 |     261.9 |
@@ -742,8 +738,11 @@ We created 620 zerocost instances consisting of 28 domains.
 | $[f,h,\hat{h},*]$                      |     305 |     309 |     305.9 |
 | $[f,\hat{h}^{FF},*]$                   |     337 |     340 |       341 |
 | $[f,\hat{h}^{FF},\langle d \rangle,*]$ |   *340* |   *342* |   *344.3* |
+|                                        |   (+80) |   (+60) |     (+80) |
 
 * Evaluation ($h=\text{M&S}$, Zerocost domains)
+
+5min, 4GB
 
 |                                        | ＊=FIFO | ＊=LIFO | ＊=Random |
 |----------------------------------------+---------+---------+-----------|
@@ -753,7 +752,7 @@ We created 620 zerocost instances consisting of 28 domains.
 | $[f,h,\hat{h},*]$                      |     307 |     306 |     307.8 |
 | $[f,\hat{h}^{FF},*]$                   |     336 |     331 |   _337.9_ |
 | $[f,\hat{h}^{FF},\langle d \rangle,*]$ |   *337* |   *333* |   _337.6_ |
-
+|                                        |   (+50) |   (+30) |     (+50) |
 
 * Simple Dynamic Configuration for Overall Performance
 
