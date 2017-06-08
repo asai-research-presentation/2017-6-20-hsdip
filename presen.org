@@ -1,4 +1,4 @@
-#+title: 
+#+title: Tie-Breaking in A* as Satisficing Search
 #+author: 
 #+include: "head.org"
 #+LINK: img file:img/%s
@@ -14,10 +14,11 @@
 _Masataro Asai_, Alex Fukunaga, The University of Tokyo
 #+end_larger
 
-#+begin_xlarge
-Tie-Breaking in A* as Satisficing Search
-#+end_xlarge
+15 min
 
+† This paper presents work from Sections 7-8 from a recent journal paper (Asai
+and Fukunaga 2017). This work has not been previously presented in any
+conference or workshop.
 #+end_center
 
 #+begin_note
@@ -27,15 +28,14 @@ Made by guicho2.71828 (Masataro Asai)
 #+end_note
 #+end_outline-text-1
 
-* Summary: /We propose new tool to improve/analyse A*/
-
+* Summary: /We propose a new tool to improve/analyse A*/
 
 + 
   #+begin_larger
   Optimal search and satisficing search are *incompatible*.
   #+end_larger
   + different algorithms (A* vs GBFS)
-  + different theoretical requirement (admissible etc..)
+  + different theoretical requirements (admissibility etc..)
 
 + 
   #+begin_larger
@@ -48,26 +48,19 @@ Made by guicho2.71828 (Masataro Asai)
 #+end_center
 #+end_xlarge
 
-* 
+** Summary: /We propose a new tool to improve/analyse A*/
 
-#+begin_xlarge
-#+begin_center
-Yes, we can use h^{FF} for optimal search!
-#+end_center
-#+end_xlarge
+ #+begin_xlarge
+ #+begin_center
+ Yes, we can use h^{FF} for optimal search!
+ #+end_center
+ #+end_xlarge
 
-#+begin_alignright
-#+begin_xlarge
-How!?
-#+end_xlarge
-#+end_alignright
-
-* Tie-breaking in A* 
-
-
-
-* Tie-breaking in A* : background
-
+ #+begin_alignright
+ #+begin_xlarge
+ How!?
+ #+end_xlarge
+ #+end_alignright
 
 * Main Topic : Optimal Graph Search
 
@@ -175,7 +168,7 @@ There are sometimes no mention at all.
 Overall, it seems that the current rule-of-thumb is to use h-based tiebreaking.
 #+end_resume
 
-* [ /h/ ] is underspecified
+* (AAAI16) [ /h/ ] is underspecified
 
 *What happens if there are still /multiple/ nodes with the same /h/ ?*
 
@@ -217,7 +210,7 @@ Both of these are not specified in the paper.
 In other words, these details are not considered important.
 #+end_resume
 
-* TODO In Fact, Tiebreaking is Quite Important
+* (AAAI16) In Fact, Tiebreaking is Quite Important 
 
 #+begin_larger
 #+begin_center
@@ -270,7 +263,7 @@ Thus, in this plateau,
 the search is controlled solely by the tiebreaking.
 #+end_resume
 
-* Testing if the 2nd Tiebreaking Really Matters
+* Testing if the 2nd Tiebreaking Really Matters                    :noexport:
 
 | <c>                           | <c>                               | <c>       |
 | Tiebreaking                   | Description                       | Solved    |
@@ -306,7 +299,7 @@ If there are still multiple nodes have the same h value, it breaks ties accordin
 We tested these strategies on IPC instances.
 #+end_resume
 
-* Testing if the 2nd Tiebreaking Really Matters
+* Testing if the 2nd Tiebreaking Really Matters                    :noexport:
 
 # Results (on 1104 IPC instances,  LMcut, 30min, 2GB)
 
@@ -338,7 +331,7 @@ surprising result, considering that only the 2nd tiebreaking
 difference caused such a difference.
 #+end_resume
 
-* TODO Comparing [h,FIFO] and [h,LIFO] per Domain (Instance Set)
+* Comparing [h,FIFO] and [h,LIFO] per Domain (Instance Set)        :noexport:
 
 #+begin_container-fluid
 #+begin_row-fluid
@@ -372,7 +365,7 @@ see, their difference is small in most domains except Openstacks
 and Cybersec.
 #+end_resume
 
-* What makes /Openstacks/ & /Cybersec/ Different?
+* What makes /Openstacks/ & /Cybersec/ Different?                  :noexport:
 
 Many *zero-cost actions*
 
@@ -411,7 +404,7 @@ Another interesting example is a realistic transportation domain with fuel optim
 In such as setting, the domain will assign 0 to all action costs except drive-truck.
 #+end_resume
 
-* TODO Zero-cost actions makes /h/-Tiebreaking difficult
+* (AAAI16) Zero-cost actions makes /h/-Tiebreaking difficult
 
 #+begin_container-fluid
 #+begin_row-fluid
@@ -462,7 +455,7 @@ Thus, to improve upon LIFO, we should understand Final Plateau.
 
 # , and the LIFO and FIFO plays the primary role. 
 
-* Understanding the Final Plateau
+* (AAAI16) Understanding the Final Plateau
 
 [[png:final-plateau0]]
 
@@ -471,7 +464,7 @@ First of all, this is the traditional understanding of the search space of
 A*. However, this is actually not the case, because
 #+end_resume
 
-* Understanding the Final Plateau
+* (AAAI16) Understanding the Final Plateau
 
 [[png:final-plateau]]
 
@@ -482,7 +475,7 @@ Without proper tiebreaking strategy, the planner has no guidance,
 because any heuristic estimates are the same almost everywhere.
 #+end_resume
 
-* Understanding the Final Plateau
+* (AAAI16) Understanding the Final Plateau
 
 In positive cost domains,
 
@@ -492,7 +485,7 @@ In positive cost domains,
 In positive-cost domains, the h-based tiebreaking is useful because it provides a gradient toward the goal.
 #+end_resume
 
-* But when almost all edges are 0-cost...
+* (AAAI16) But when almost all edges are 0-cost...
 
 [[png:final-plateau3]]
 
@@ -501,7 +494,7 @@ However, in zero-cost domains, almost all h values are 0, and h-based tiebreakin
 The problem is, how can we give a useful guidance in such a region?
 #+end_resume
 
-* Depth-based Tiebreaking
+* (AAAI16) Depth-based Tiebreaking
 
 [[png:final-plateau4]]
 
@@ -516,7 +509,7 @@ a plateau entrance, and its depth is 0.
 If the parent of a node have the same f and h value, then the child has a depth larger by one.
 #+end_resume
 
-* Non-trivial Question: How to use the /Depth?/
+* (AAAI16) Non-trivial Question: How to use the /Depth?/
 
 Assume h=0 (because 0≦h≦h^*=0)
 
@@ -569,15 +562,16 @@ depth-first LIFO tiebreaking.
 It may quickly pass and miss the important depth.
 #+end_resume
 
-
-* Random Depth Tiebreaking
+* (AAAI16) Random Depth Tiebreaking
 
 [[png:final-plateau7]]
 
 #+begin_alignright
 Classic Exploration vs Exploitation problem
 
-Connections to Rapidly exploring Random Tree (RRT) ?
+#+begin_larger
+(Backgrounds end here)
+#+end_larger
 #+end_alignright
 
 #+begin_resume
@@ -599,6 +593,118 @@ This is an interesting aspect similar to Rapidly exploring Random Tree.
 # ［ h, /rd/, RO ］
 # 
 # [[png:final-plateau7]]
+
+* (New materials from here) Connection to Type-based GBFS
+
+*Search Diversification* method for *GBFS*
+
+Type-based bucket $\langle g, h \rangle$ (Xie 14):
+
++ Store the nodes according to the keys
++ Select a random node in a random bucket when picking a node in OPEN list
+
+RandomDepth (AAAI16) is a variant of type-based, but *restricted within a plateau*: $[ f, h, \langle d \rangle ]$
+
+* Why the satisficing technique is helpful in optimal search?
+
+*Because indeed optimal search is using satisficing search*
+
++ A* $[ f, h, \text{fifo} ]$  : Performing *GBFS [h, fifo] on each plateau*
++ A* $[ f, \text{fifo} ]$  : Performing a *blind breadth-first search [fifo] on each plateau*
+
+Reinterpretation of A∗ as */iterations of satisficing search on plateaus/*:
+
+#+begin_src bash
+while true
+    satisficing_search( plateau(f))
+    if plateau (f) is SAT; then
+       return solution
+    else
+       Increase f
+#+end_src
+
+** A* as satisficing search
+
+ #+begin_src bash
+ while true
+     satisficing_search( plateau(f))
+     if plateau (f) is SAT; then
+        return solution
+     else
+        Increase f
+ #+end_src
+
+[[png:sat/sat-astar1]]
+
+** A* as satisficing search
+
+ #+begin_src bash
+ while true
+     satisficing_search( plateau(f))
+     if plateau (f) is SAT; then
+        return solution
+     else
+        Increase f
+ #+end_src
+
+[[png:sat/sat-astar2]]
+
+** A* as satisficing search
+
+ #+begin_src bash
+ while true
+     satisficing_search( plateau(f))
+     if plateau (f) is SAT; then
+        return solution
+     else
+        Increase f
+ #+end_src
+
+[[png:sat/sat-astar3]]
+
+** A* as satisficing search
+
+
+#+begin_container-fluid
+#+begin_row-fluid
+#+begin_span7
+ #+begin_src bash
+ while true
+     satisficing_search( plateau(f))
+     if plateau (f) is SAT; then
+        return solution
+     else
+        Increase f
+ #+end_src
+#+end_span7
+#+begin_span5
+Implication: 
+#+begin_larger
++ *Arbitrary* satisficing technology can be used for optimal planning
+#+end_larger
+#+end_span5
+#+end_row-fluid
+#+end_container-fluid
+
+[[png:sat/sat-astar4]]
+
+#+begin_larger
++ Optimal solutions as long as *the first criterion* $f\;$ is admissible
+#+end_larger
+
+
+* Using some satisficing techniques for optimal planning
+
++ Standard A* :: $[f, h,$  * $]\;$ where * is one of LIFO, FIFO, Random
+
++ Using unit-cost heuristics $\hat{h}\;$ : treats every edge costs as 1 (Previously used for LAMA) ::
+     $[f, \hat{h}, * ]$, $[f, h, \hat{h}, * ]$ -- large overhead for $\hat{h}^{\text{LMcut}}, \hat{h}^{\text{M&S}}$
+
++ Using unit-cost inadmissible heuristics $\hat{h}^{FF}$ ::
+     $[f, \hat{h}^{FF}, *]$ , $[f, h, \hat{h}^{FF}, * ]$ -- faster tiebreaking heuristics
+
++ Combine it with random depth ::
+     $[f, \hat{h}^{FF}, \langle d \rangle$ , * $]$
 
 * Evaluation (domains)
 
@@ -626,200 +732,74 @@ such as wood, fuel or electricity.
 We created 620 zerocost instances consisting of 28 domains.
 #+end_resume
 
-* Evaluation (participants)
+* Evaluation ($h=\text{LMcut}$, Zerocost domains)
+
+|                                        | ＊=FIFO | ＊=LIFO | ＊=Random |
+|----------------------------------------+---------+---------+-----------|
+| $[f,h,*]$                              |     256 |     279 |     261.9 |
+| $[f,h,\langle d \rangle,*]$            |     284 |     264 |     288.1 |
+| $[f,\hat{h},*]$                        |     295 |     303 |     301.0 |
+| $[f,h,\hat{h},*]$                      |     305 |     309 |     305.9 |
+| $[f,\hat{h}^{FF},*]$                   |     337 |     340 |       341 |
+| $[f,\hat{h}^{FF},\langle d \rangle,*]$ |   *340* |   *342* |   *344.3* |
+
+* Evaluation ($h=\text{M&S}$, Zerocost domains)
+
+|                                        | ＊=FIFO | ＊=LIFO | ＊=Random |
+|----------------------------------------+---------+---------+-----------|
+| $[f,h,*]$                              |     280 |     301 |     287.7 |
+| $[f,h,\langle d \rangle,*]$            |     302 |     288 |     308.1 |
+| $[f,\hat{h},*]$                        |     308 |     305 |     307.3 |
+| $[f,h,\hat{h},*]$                      |     307 |     306 |     307.8 |
+| $[f,\hat{h}^{FF},*]$                   |     336 |     331 |   _337.9_ |
+| $[f,\hat{h}^{FF},\langle d \rangle,*]$ |   *337* |   *333* |   _337.6_ |
 
 
-#+begin_container-fluid
-#+begin_row-fluid
-#+begin_span6
-A* with *[h, FIFO]*
+* Simple Dynamic Configuration for Overall Performance
 
-Selects the nodes with /f_{min}/
+$[f=g+h, \hat{h}^{FF}]$ --- Computing 2 different heuristics
 
-*IF* multiple nodes have /f_{min}/
++ Only beneficial when the plateau is huge (especially the domain contains zerocost)
 
-Selects the nodes with /h_{min}/
++ Negative effect on IPC *except* Cybersec, Openstack
 
-*IF* multiple nodes have /h_{min}/
++ Let's disable it when this is not the case
 
-Select the oldest node (i.e. FIFO)
-#+end_span6
-#+begin_span6
-A* with *[h, LIFO]*
+* Simple Dynamic Configuration for Overall Performance
 
-Selects the nodes with /f_{min}/
+|---+-------------------------------------------------------------------------------------------------+---------+---------|
+|   | IPC+Zerocost results included                                                                   |   LMcut |     M&S |
+|---+-------------------------------------------------------------------------------------------------+---------+---------|
+| / | $[f,h,\text{fifo}]$                                                                             |     814 |     771 |
+|   | $[f,h,\text{lifo}]$                                                                             |     844 |     797 |
+| / | $[f,h,\text{Random}]$                                                                           |   820.8 |   777.1 |
+|   | $[f,h,\langle d \rangle,\text{fifo}]$                                                           |     855 |     789 |
+|   | $[f,h,\langle d \rangle,\text{lifo}]$                                                           |     839 |     775 |
+|   | $[f,h,\langle d \rangle,\text{Random}]$                                                         |   859.5 |   793.7 |
+| / | [0.3em] Distance-to-Go                                                                          |         |         |
+| / | $[f,\hh,\text{fifo}]$                                                                           |     829 |     785 |
+| / | $[f,\hh,\text{lifo}]$                                                                           |     837 |     780 |
+| / | $[f,\hh,\text{Random}]$                                                                         |    835. |   777.7 |
+| / | $[f,h,\hh,\text{fifo}]$                                                                         |     841 |     783 |
+| / | $[f,h,\hh,\text{lifo}]$                                                                         |     844 |     781 |
+| / | $[f,h,\hh,\text{Random}]$                                                                       |   840.6 |   778.7 |
+|---+-------------------------------------------------------------------------------------------------+---------+---------|
+|   | Multi-heuristic strategies                                                                      |         |         |
+| / | $[f,\hat{h}^{FF},\text{fifo}]$                                                                  |     901 |     794 |
+| / | $[f,\hat{h}^{FF},\text{lifo}]$                                                                  |     902 |     788 |
+| / | $[f,\hat{h}^{FF},\text{Random}]$                                                                |   904.7 |   794.9 |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{fifo}]$                                                |     903 |     794 |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{lifo}]$                                                |     902 |     790 |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$                                              |   906.2 |   794.4 |
+|---+-------------------------------------------------------------------------------------------------+---------+---------|
+|   | Dynamic Configuration                                                                           |         |         |
+|   | If a problem contains zerocost actions:                                                         |         |         |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ ; Else $[f,h,\langle d \rangle,\text{lifo}]$ | *911.9* |         |
+|   |                                                                                                 |         |         |
+|   | If a problem contains zerocost actions:                                                         |         |         |
+|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ ; Else $[f,h,\text{lifo}]$                   |         | *832.3* |
+|---+-------------------------------------------------------------------------------------------------+---------+---------|
 
-*IF* multiple nodes have /f_{min}/
-
-Selects the nodes with /h_{min}/
-
-*IF* multiple nodes have /h_{min}/
-
-Select the newest node (i.e. LIFO)
-#+end_span6
-#+end_row-fluid
-
------------
-
-#+begin_row-fluid
-#+begin_span1
-
-#+end_span1
-#+begin_span10
-A* with *[h, RD, RO]*,
-
-Selects the nodes with /f_{min}/
-
-*IF* multiple nodes have /f_{min}/, selects the nodes with /h_{min}/
-
-*IF* multiple nodes have /h_{min}/, selects a random depth /d/
-
-*IF* multiple nodes in /d/, Select a node randomly
-#+end_span10
-#+begin_span1
-
-#+end_span1
-#+end_row-fluid
-#+end_container-fluid
-
-
-#+begin_resume
-Now lets review the participants.  [h, FIFO] is a conventional
-tiebreaking strategy which first break ties according to h, When there are
-multiple nodes with the same h, it then breaks ties accoding to the FIFO
-order, in other words expanding the oldest node.
-
-[h, LIFO] is another conventional tiebreaking strategy which also uses
-h-tiebreaking, but when there are multiple nodes with the same h,
-it expands in LIFO order, or expanding the most recently generated node first.
-
-Finally, [h, RD, RO] is our proposed method. It also uses the h-based
-tiebreaking.  However, when multiple nodes have the same h, it puts them
-into several buckets according to the depth d, then select a bucket at
-random. From the selected bucket, it selects a node at random.
-#+end_resume
-
-* Evaluation (number of problems solved)
-
-#+begin_smaller
-LMcut, Merge-and-Shrink(M&S) : state-of-the-art heuristic functions in planning
-
-［h, RD, RO］ shows the average of 10 runs (↑ ＜increase over [h,FIFO]＞)
-#+end_smaller
-
-| /                       | <            | >           | <>                |
-|                         | <c>          | <c>         | <c>               |
-|                         | ［h, FIFO］  | ［h, LIFO］ | ［h, RD, RO］     |
-| Domain Set              | (FD Default) |             | (Proposed)        |
-|-------------------------+--------------+-------------+-------------------|
-| LMcut                   |              |             |                   |
-| IPC Instances (1104)    |              |             |                   |
-| Zerocost Instances(680) |              |             |                   |
-| Sum(1724)               |              |             |                   |
-|-------------------------+--------------+-------------+-------------------|
-| M&S                     |              |             |                   |
-| IPC Instances (1104)    |              |             |                   |
-| Zerocost Instances(680) |              |             |                   |
-| Sum(1724)               |              |             |                   |
-|-------------------------+--------------+-------------+-------------------|
-
-#+begin_resume
-We tested these tiebreakings with a standard competition setting of 30 min,
-2GB memory.  We used both the LMcut heuristics and Merge-and-Shrink
-heuristics, which are both the state-of-the-arts but
-whose values are computed in a completely different manner.
-#+end_resume
-
-* Evaluation (number of problems solved)
-
-#+begin_smaller
-LMcut, Merge-and-Shrink(M&S) : state-of-the-art heuristic functions in planning
-
-［h, RD, RO］ shows the average of 10 runs (↑ ＜increase over [h,FIFO]＞)
-#+end_smaller
-
-| /                       | <            | >           | <>                |
-|                         | <c>          | <c>         | <c>               |
-|                         | ［h, FIFO］  | ［h, LIFO］ | ［h, RD, RO］     |
-| Domain Set              | (FD Default) |             | (Proposed)        |
-|-------------------------+--------------+-------------+-------------------|
-| LMcut                   |              |             |                   |
-| IPC Instances (1104)    | 558          | 565         | *572.8* (↑ 14.8) |
-| Zerocost Instances(680) | 256          | 279         | *294.2* (↑ 38.2) |
-| Sum(1724)               | 814          | 844         | *867.0* (↑ 53.0) |
-|-------------------------+--------------+-------------+-------------------|
-| M&S                     |              |             |                   |
-| IPC Instances (1104)    | 479          | *488*       | 484.0 (↑ 5.0)    |
-| Zerocost Instances(680) | 276          | 290         | *310.2* (↑ 34.2) |
-| Sum(1724)               | 755          | 778         | *794.2* (↑ 39.2) |
-|-------------------------+--------------+-------------+-------------------|
-
-#+begin_alignright
-*［h, RD, RO］ Outperformed Both [h,FIFO] and [h,LIFO] !*
-#+end_alignright
-
-#+begin_resume
-And this is the result. We achieved a
-significant improvement both in the IPC instances and in Zerocost instances.
-#+end_resume
-
-* Depth Distribution in Woodworking-cut p04
-
-"cut" action has positive cost (consumes wood), others have 0 cost
-
-#+begin_center
-  
-[[png:depth-distribution0]]
-
-#+end_center
-
-#+begin_resume
-Next, in order to see our plateau theory actually holds,
-we plotted the number of nodes in each depth.
-#+end_resume
-
-* Depth Distribution in Woodworking-cut p04
-
-"cut" action has positive cost (consumes wood), others have 0 cost
-
-#+begin_center
-  
-[[png:depth-distribution1]]
-
-#+end_center
-
-#+begin_resume
-Now we can first see FIFO is too biased toward the shallower region.
-#+end_resume
-
-* Depth Distribution in Woodworking-cut p04
-
-"cut" action has positive cost (consumes wood), others have 0 cost
-
-#+begin_center
-  
-[[png:depth-distribution2]]
-
-#+end_center
-
-#+begin_resume
-And LIFO is too biased toward the deeper region.
-#+end_resume
-
-* Depth Distribution in Woodworking-cut p04
-
-"cut" action has positive cost (consumes wood), others have 0 cost
-
-#+begin_center
-  
-[[png:depth-distribution3]]
-
-#+end_center
-
-#+begin_resume
-In contrast the distribution of RandomDepth draws a beautiful curve,
-showing that it distributes its effort among different depths.
-#+end_resume
 
 * Contributions
 
@@ -859,4 +839,202 @@ Thanks for your attention!
 + Little disadvantage in positive-cost domains (depth is always 0)
   + except: slows down expansion rate in M&S
     + M&S eval is table lookup and quite fast
+
+
+
+* Old evaluation                                                   :noexport:
+** Evaluation (participants)
+
+
+ #+begin_container-fluid
+ #+begin_row-fluid
+ #+begin_span6
+ A* with *[h, FIFO]*
+
+ Selects the nodes with /f_{min}/
+
+ *IF* multiple nodes have /f_{min}/
+
+ Selects the nodes with /h_{min}/
+
+ *IF* multiple nodes have /h_{min}/
+
+ Select the oldest node (i.e. FIFO)
+ #+end_span6
+ #+begin_span6
+ A* with *[h, LIFO]*
+
+ Selects the nodes with /f_{min}/
+
+ *IF* multiple nodes have /f_{min}/
+
+ Selects the nodes with /h_{min}/
+
+ *IF* multiple nodes have /h_{min}/
+
+ Select the newest node (i.e. LIFO)
+ #+end_span6
+ #+end_row-fluid
+
+ -----------
+
+ #+begin_row-fluid
+ #+begin_span1
+
+ #+end_span1
+ #+begin_span10
+ A* with *[h, RD, RO]*,
+
+ Selects the nodes with /f_{min}/
+
+ *IF* multiple nodes have /f_{min}/, selects the nodes with /h_{min}/
+
+ *IF* multiple nodes have /h_{min}/, selects a random depth /d/
+
+ *IF* multiple nodes in /d/, Select a node randomly
+ #+end_span10
+ #+begin_span1
+
+ #+end_span1
+ #+end_row-fluid
+ #+end_container-fluid
+
+
+ #+begin_resume
+ Now lets review the participants.  [h, FIFO] is a conventional
+ tiebreaking strategy which first break ties according to h, When there are
+ multiple nodes with the same h, it then breaks ties accoding to the FIFO
+ order, in other words expanding the oldest node.
+
+ [h, LIFO] is another conventional tiebreaking strategy which also uses
+ h-tiebreaking, but when there are multiple nodes with the same h,
+ it expands in LIFO order, or expanding the most recently generated node first.
+
+ Finally, [h, RD, RO] is our proposed method. It also uses the h-based
+ tiebreaking.  However, when multiple nodes have the same h, it puts them
+ into several buckets according to the depth d, then select a bucket at
+ random. From the selected bucket, it selects a node at random.
+ #+end_resume
+
+** Evaluation (number of problems solved)
+
+ #+begin_smaller
+ LMcut, Merge-and-Shrink(M&S) : state-of-the-art heuristic functions in planning
+
+ ［h, RD, RO］ shows the average of 10 runs (↑ ＜increase over [h,FIFO]＞)
+ #+end_smaller
+
+ | /                       | <            | >           | <>                |
+ |                         | <c>          | <c>         | <c>               |
+ |                         | ［h, FIFO］  | ［h, LIFO］ | ［h, RD, RO］     |
+ | Domain Set              | (FD Default) |             | (Proposed)        |
+ |-------------------------+--------------+-------------+-------------------|
+ | LMcut                   |              |             |                   |
+ | IPC Instances (1104)    |              |             |                   |
+ | Zerocost Instances(680) |              |             |                   |
+ | Sum(1724)               |              |             |                   |
+ |-------------------------+--------------+-------------+-------------------|
+ | M&S                     |              |             |                   |
+ | IPC Instances (1104)    |              |             |                   |
+ | Zerocost Instances(680) |              |             |                   |
+ | Sum(1724)               |              |             |                   |
+ |-------------------------+--------------+-------------+-------------------|
+
+ #+begin_resume
+ We tested these tiebreakings with a standard competition setting of 30 min,
+ 2GB memory.  We used both the LMcut heuristics and Merge-and-Shrink
+ heuristics, which are both the state-of-the-arts but
+ whose values are computed in a completely different manner.
+ #+end_resume
+
+** Evaluation (number of problems solved)
+
+ #+begin_smaller
+ LMcut, Merge-and-Shrink(M&S) : state-of-the-art heuristic functions in planning
+
+ ［h, RD, RO］ shows the average of 10 runs (↑ ＜increase over [h,FIFO]＞)
+ #+end_smaller
+
+ | /                       | <            | >           | <>                |
+ |                         | <c>          | <c>         | <c>               |
+ |                         | ［h, FIFO］  | ［h, LIFO］ | ［h, RD, RO］     |
+ | Domain Set              | (FD Default) |             | (Proposed)        |
+ |-------------------------+--------------+-------------+-------------------|
+ | LMcut                   |              |             |                   |
+ | IPC Instances (1104)    | 558          | 565         | *572.8* (↑ 14.8) |
+ | Zerocost Instances(680) | 256          | 279         | *294.2* (↑ 38.2) |
+ | Sum(1724)               | 814          | 844         | *867.0* (↑ 53.0) |
+ |-------------------------+--------------+-------------+-------------------|
+ | M&S                     |              |             |                   |
+ | IPC Instances (1104)    | 479          | *488*       | 484.0 (↑ 5.0)    |
+ | Zerocost Instances(680) | 276          | 290         | *310.2* (↑ 34.2) |
+ | Sum(1724)               | 755          | 778         | *794.2* (↑ 39.2) |
+ |-------------------------+--------------+-------------+-------------------|
+
+ #+begin_alignright
+ *［h, RD, RO］ Outperformed Both [h,FIFO] and [h,LIFO] !*
+ #+end_alignright
+
+ #+begin_resume
+ And this is the result. We achieved a
+ significant improvement both in the IPC instances and in Zerocost instances.
+ #+end_resume
+
+** Depth Distribution in Woodworking-cut p04
+
+ "cut" action has positive cost (consumes wood), others have 0 cost
+
+ #+begin_center
+  
+ [[png:depth-distribution0]]
+
+ #+end_center
+
+ #+begin_resume
+ Next, in order to see our plateau theory actually holds,
+ we plotted the number of nodes in each depth.
+ #+end_resume
+
+** Depth Distribution in Woodworking-cut p04
+
+ "cut" action has positive cost (consumes wood), others have 0 cost
+
+ #+begin_center
+  
+ [[png:depth-distribution1]]
+
+ #+end_center
+
+ #+begin_resume
+ Now we can first see FIFO is too biased toward the shallower region.
+ #+end_resume
+
+** Depth Distribution in Woodworking-cut p04
+
+ "cut" action has positive cost (consumes wood), others have 0 cost
+
+ #+begin_center
+  
+ [[png:depth-distribution2]]
+
+ #+end_center
+
+ #+begin_resume
+ And LIFO is too biased toward the deeper region.
+ #+end_resume
+
+** Depth Distribution in Woodworking-cut p04
+
+ "cut" action has positive cost (consumes wood), others have 0 cost
+
+ #+begin_center
+  
+ [[png:depth-distribution3]]
+
+ #+end_center
+
+ #+begin_resume
+ In contrast the distribution of RandomDepth draws a beautiful curve,
+ showing that it distributes its effort among different depths.
+ #+end_resume
 
