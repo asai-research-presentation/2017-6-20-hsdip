@@ -7,6 +7,15 @@
 #+LINK: spng file:img/static/%s.png
 #+LINK: sjpg file:img/static/%s.jpg
 
+
+ordering does not matter
+
+complete satisficing search
+incomplete satisficing search
+
+
+
+
 #+begin_outline-text-1
 #+begin_center
 
@@ -39,28 +48,14 @@ Made by guicho2.71828 (Masataro Asai)
 
 + 
   #+begin_larger
-  There was no way to use FF heuristics for optimal search.
+  Can we use FF heuristics for optimal search?
   #+end_larger
 
 #+begin_xlarge
 #+begin_center
-+ This is no longer true.
++ Yes, we can!
 #+end_center
 #+end_xlarge
-
-** Summary: /We propose a new tool to improve/analyse A*/
-
- #+begin_xlarge
- #+begin_center
- Yes, we can use h^{FF} for optimal search!
- #+end_center
- #+end_xlarge
-
- #+begin_alignright
- #+begin_xlarge
- How!?
- #+end_xlarge
- #+end_alignright
 
 * Main Topic : Optimal Graph Search                                :noexport:
 
@@ -525,7 +520,7 @@ because all edge costs are 0.
 In this context, introducing a bias in each depth is not a good idea.
 #+end_resume
 
-* FIFO: selecting the smallest depth?                                :AAAI16:
+* FIFO: selecting the smallest depth?                       :noexport:AAAI16:
 
 # /FirstDepth/ tiebreaking strategy : ［ h, /fd/ ］
 
@@ -540,7 +535,7 @@ FirstDepth tends to search the neighborhood of plateau entrance exhaustively,
 and takes too much time to reach the appropriate depth.
 #+end_resume
 
-* LIFO: selecting the largest depth?                                 :AAAI16:
+* LIFO: selecting the largest depth?                        :noexport:AAAI16:
 
 # /LastDepth/ tiebreaking strategy :  ［ h, /ld/ ］
 
@@ -553,7 +548,7 @@ depth-first LIFO tiebreaking.
 It may quickly pass and miss the important depth.
 #+end_resume
 
-* Random Depth Tiebreaking                                           :AAAI16:
+* Random Depth Tiebreaking                                  :noexport:AAAI16:
 
 [[png:final-plateau7]]
 
@@ -585,7 +580,7 @@ This is an interesting aspect similar to Rapidly exploring Random Tree.
 # 
 # [[png:final-plateau7]]
 
-* (New materials from here) Connection to Type-based GBFS
+* (New materials from here) Connection to Type-based GBFS   :noexport:AAAI16:
 
 *Search Diversification* method for *GBFS*
 
@@ -671,7 +666,7 @@ while true
 #+begin_span5
 Implication: 
 #+begin_larger
-+ *Arbitrary* satisficing technology can be used for optimal planning
++ *Any complete satisficing technique* can be embedded in optimal planning
 #+end_larger
 #+end_span5
 #+end_row-fluid
@@ -726,6 +721,10 @@ such as wood, fuel or electricity.
 We created 620 zerocost instances consisting of 28 domains.
 #+end_resume
 
+* Industrial Impact of Zero-Cost
+
+
+
 * Evaluation ($h=\text{LMcut}$, Zerocost domains)
 
 5min, 4GB
@@ -754,7 +753,8 @@ We created 620 zerocost instances consisting of 28 domains.
 | $[f,\hat{h}^{FF},\langle d \rangle,*]$ |   *337* |   *333* |   _337.6_ |
 |                                        |   (+50) |   (+30) |     (+50) |
 
-* Simple Dynamic Configuration for Overall Performance
+
+* Simple Dynamic Configuration for Overall Performance               :時間使い過ぎ:
 
 $[f=g+h, \hat{h}^{FF}]$ --- Computing 2 different heuristics
 
@@ -763,8 +763,6 @@ $[f=g+h, \hat{h}^{FF}]$ --- Computing 2 different heuristics
 + Negative effect on IPC *except* Cybersec, Openstack
 
 + Let's disable it when this is not the case
-
-* Simple Dynamic Configuration for Overall Performance
 
 IPC+Zerocost results
 
@@ -810,6 +808,8 @@ IPC+Zerocost results
 #+end_span6
 #+end_row-fluid
 #+end_container-fluid
+
+* depth 削って tiebreaking ごとの completeness
 
 * Conclusion & Future Work
 
@@ -1015,4 +1015,3 @@ IPC+Zerocost results
  In contrast the distribution of RandomDepth draws a beautiful curve,
  showing that it distributes its effort among different depths.
  #+end_resume
-
