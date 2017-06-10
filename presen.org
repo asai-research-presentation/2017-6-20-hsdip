@@ -7,15 +7,6 @@
 #+LINK: spng file:img/static/%s.png
 #+LINK: sjpg file:img/static/%s.jpg
 
-
-ordering does not matter
-
-complete satisficing search
-incomplete satisficing search
-
-
-
-
 #+begin_outline-text-1
 #+begin_center
 
@@ -163,7 +154,7 @@ There are sometimes no mention at all.
 Overall, it seems that the current rule-of-thumb is to use h-based tiebreaking.
 #+end_resume
 
-* [ /h/ ] is underspecified                                          :AAAI16:
+* [ /h/ ] is underspecified
 
 *What happens if there are still /multiple/ nodes with the same /h/ ?*
 
@@ -196,7 +187,7 @@ Both of these are not specified in the paper.
 In other words, these details are not considered important.
 #+end_resume
 
-* In Fact, Tiebreaking is Quite Important                            :AAAI16:
+* In Fact, Tiebreaking is Quite Important
 
 #+begin_larger
 #+begin_center
@@ -317,7 +308,9 @@ surprising result, considering that only the 2nd tiebreaking
 difference caused such a difference.
 #+end_resume
 
-* Comparing [h,FIFO] and [h,LIFO] per Domain (Instance Set)        :noexport:
+* Comparing [h,FIFO] and [h,LIFO] per Domain (Instance Set)
+
+Significant performance difference by merely changing the 2nd tiebreaking
 
 #+begin_container-fluid
 #+begin_row-fluid
@@ -351,21 +344,17 @@ see, their difference is small in most domains except Openstacks
 and Cybersec.
 #+end_resume
 
-* What makes /Openstacks/ & /Cybersec/ Different?                  :noexport:
+* What makes /Openstacks/ & /Cybersec/ Different?
 
-Many *zero-cost actions*
+They have many *zero-cost actions*
 
-#+begin_smaller
-which (before proceeding, let me say...) enables
-#+end_smaller
-
-the modelling of many *practical applications* w/ *key resource minimization*
+Used in many *practical applications* w/ *key resource minimization*
 
 + Consider a *transportation domain w/ fuel minimization.*
   #+begin_alignright
   Assign 0 cost to all actions *except drive-truck*
 
-  which burns some fuel.
+  Loading packages do not consume fuel.
   #+end_alignright
 + *Openstacks is an application domain* from Operations Research (Fink and Voss, 1999)
   #+begin_alignright
@@ -375,6 +364,12 @@ the modelling of many *practical applications* w/ *key resource minimization*
   #+begin_alignright
   The great talk by Joerg Hoffmann in the last ICAPS!
   #+end_alignright
+
+#+begin_smaller
+Zerocost actions makes problems more difficult (W［2］-complete → para-NP-hard) [Aghighi,IJCAI15]
+
+Approaches for zerocost domains: Pearl&Kim (82), Thayer&Ruml(09,11), Cushing(10), Richter(11), Benton(10)
+#+end_smaller
 
 #+begin_resume
 These domains are characteristic by its large number of zero-cost actions.
@@ -390,7 +385,7 @@ Another interesting example is a realistic transportation domain with fuel optim
 In such as setting, the domain will assign 0 to all action costs except drive-truck.
 #+end_resume
 
-* Zero-cost actions makes /h/-Tiebreaking difficult                  :AAAI16:
+* Zero-cost actions makes /h/-Tiebreaking difficult
 
 #+begin_container-fluid
 #+begin_row-fluid
@@ -441,46 +436,46 @@ Thus, to improve upon LIFO, we should understand Final Plateau.
 
 # , and the LIFO and FIFO plays the primary role. 
 
-* Understanding the Final Plateau                                    :AAAI16:
+** Understanding the Final Plateau
 
-[[png:final-plateau0]]
+ [[png:final-plateau0]]
 
-#+begin_resume
-First of all, this is the traditional understanding of the search space of
-A*. However, this is actually not the case, because
-#+end_resume
+ #+begin_resume
+ First of all, this is the traditional understanding of the search space of
+ A*. However, this is actually not the case, because
+ #+end_resume
 
-* Understanding the Final Plateau                                    :AAAI16:
+** Understanding the Final Plateau
 
-[[png:final-plateau]]
+ [[png:final-plateau]]
 
-#+begin_resume
-in fact, most nodes are in the large final plateau.
-This is the same whether it is positive or zero-cost.
-Without proper tiebreaking strategy, the planner has no guidance,
-because any heuristic estimates are the same almost everywhere.
-#+end_resume
+ #+begin_resume
+ in fact, most nodes are in the large final plateau.
+ This is the same whether it is positive or zero-cost.
+ Without proper tiebreaking strategy, the planner has no guidance,
+ because any heuristic estimates are the same almost everywhere.
+ #+end_resume
 
-* Understanding the Final Plateau                                    :AAAI16:
+** Understanding the Final Plateau
 
-In positive cost domains,
+ In positive cost domains,
 
-[[png:final-plateau2]]
+ [[png:final-plateau2]]
 
-#+begin_resume
-In positive-cost domains, the h-based tiebreaking is useful because it provides a gradient toward the goal.
-#+end_resume
+ #+begin_resume
+ In positive-cost domains, the h-based tiebreaking is useful because it provides a gradient toward the goal.
+ #+end_resume
 
-* But when almost all edges are 0-cost...                            :AAAI16:
+** But when almost all edges are 0-cost...
 
-[[png:final-plateau3]]
+ [[png:final-plateau3]]
 
-#+begin_resume
-However, in zero-cost domains, almost all h values are 0, and h-based tiebreaking is useless.
-The problem is, how can we give a useful guidance in such a region?
-#+end_resume
+ #+begin_resume
+ However, in zero-cost domains, almost all h values are 0, and h-based tiebreaking is useless.
+ The problem is, how can we give a useful guidance in such a region?
+ #+end_resume
 
-* Depth-based Tiebreaking                                            :AAAI16:
+* Depth-based Tiebreaking                                          :noexport:
 
 [[png:final-plateau4]]
 
@@ -495,92 +490,92 @@ a plateau entrance, and its depth is 0.
 If the parent of a node have the same f and h value, then the child has a depth larger by one.
 #+end_resume
 
-* Non-trivial Question: How to use the /Depth?/             :noexport:AAAI16:
+** Non-trivial Question: How to use the /Depth?/                   :noexport:
 
-Assume h=0 (because 0≦h≦h^*=0)
+ Assume h=0 (because 0≦h≦h^*=0)
 
-Within Final Plateau f=f^*, *all solutions are cost optimal* regardless of depth
+ Within Final Plateau f=f^*, *all solutions are cost optimal* regardless of depth
 
-#+begin_alignright
-because *all edge costs are 0.*
-#+end_alignright
+ #+begin_alignright
+ because *all edge costs are 0.*
+ #+end_alignright
 
-[[png:final-plateau4-2]]
+ [[png:final-plateau4-2]]
 
-#+begin_alignright
-#+begin_larger
-We found that *DEPTH BIAS IS NOT A GOOD IDEA.*
-#+end_larger
-#+end_alignright
+ #+begin_alignright
+ #+begin_larger
+ We found that *DEPTH BIAS IS NOT A GOOD IDEA.*
+ #+end_larger
+ #+end_alignright
 
-#+begin_resume
-The next problem is how to use the depth.  In designing such a strategy, we
-should note that within final plateau, any solutions are cost optimal
-because all edge costs are 0.
-In this context, introducing a bias in each depth is not a good idea.
-#+end_resume
+ #+begin_resume
+ The next problem is how to use the depth.  In designing such a strategy, we
+ should note that within final plateau, any solutions are cost optimal
+ because all edge costs are 0.
+ In this context, introducing a bias in each depth is not a good idea.
+ #+end_resume
 
-* FIFO: selecting the smallest depth?                       :noexport:AAAI16:
+** FIFO: selecting the smallest depth?                             :noexport:
 
-# /FirstDepth/ tiebreaking strategy : ［ h, /fd/ ］
+ # /FirstDepth/ tiebreaking strategy : ［ h, /fd/ ］
 
-[[png:final-plateau5]]
+ [[png:final-plateau5]]
 
-#+begin_resume
-For example, what happens if we always prefer the smallest depth?
-We call such a stratefy First Depth.
-FirstDepth behaves like a breadth-first search and FIFO tiebreaking, which did not perform well.
+ #+begin_resume
+ For example, what happens if we always prefer the smallest depth?
+ We call such a stratefy First Depth.
+ FirstDepth behaves like a breadth-first search and FIFO tiebreaking, which did not perform well.
 
-FirstDepth tends to search the neighborhood of plateau entrance exhaustively,
-and takes too much time to reach the appropriate depth.
-#+end_resume
+ FirstDepth tends to search the neighborhood of plateau entrance exhaustively,
+ and takes too much time to reach the appropriate depth.
+ #+end_resume
 
-* LIFO: selecting the largest depth?                        :noexport:AAAI16:
+** LIFO: selecting the largest depth?                              :noexport:
 
-# /LastDepth/ tiebreaking strategy :  ［ h, /ld/ ］
+ # /LastDepth/ tiebreaking strategy :  ［ h, /ld/ ］
 
-[[png:final-plateau6]]
+ [[png:final-plateau6]]
 
-#+begin_resume
-The opposite scheme, LastDepth, also have a problem.  Last depth, which
-always selects the largest depth, is in certain condition equivalent to
-depth-first LIFO tiebreaking.
-It may quickly pass and miss the important depth.
-#+end_resume
+ #+begin_resume
+ The opposite scheme, LastDepth, also have a problem.  Last depth, which
+ always selects the largest depth, is in certain condition equivalent to
+ depth-first LIFO tiebreaking.
+ It may quickly pass and miss the important depth.
+ #+end_resume
 
-* Random Depth Tiebreaking                                  :noexport:AAAI16:
+** Random Depth Tiebreaking                                        :noexport:
 
-[[png:final-plateau7]]
+ [[png:final-plateau7]]
 
-#+begin_alignright
-Classic Exploration vs Exploitation problem
+ #+begin_alignright
+ Classic Exploration vs Exploitation problem
 
-#+begin_larger
-(Backgrounds end here)
-#+end_larger
-#+end_alignright
+ #+begin_larger
+ (Backgrounds end here)
+ #+end_larger
+ #+end_alignright
 
-#+begin_resume
-Finally, we propose RandomDepth tiebreaking which removes the depth bias.
-Actual implementation of RandomDepth is as follows.
+ #+begin_resume
+ Finally, we propose RandomDepth tiebreaking which removes the depth bias.
+ Actual implementation of RandomDepth is as follows.
 
-When h-tiebreaking fails, RandomDepth selects a random depth.
+ When h-tiebreaking fails, RandomDepth selects a random depth.
 
-Then a Random Order selects one node at random.
+ Then a Random Order selects one node at random.
 
-RandomDepth Tiebreaking can search the final plateau uniformly and sparsely.
-This is an interesting aspect similar to Rapidly exploring Random Tree.
-#+end_resume
+ RandomDepth Tiebreaking can search the final plateau uniformly and sparsely.
+ This is an interesting aspect similar to Rapidly exploring Random Tree.
+ #+end_resume
 
-# * Random Depth Tiebreaking + random selection within depth
-# 
-# third tiebreaking: not FIFO, not LIFO, but RandomOrder : RO
-# 
-# ［ h, /rd/, RO ］
-# 
-# [[png:final-plateau7]]
+ # * Random Depth Tiebreaking + random selection within depth
+ # 
+ # third tiebreaking: not FIFO, not LIFO, but RandomOrder : RO
+ # 
+ # ［ h, /rd/, RO ］
+ # 
+ # [[png:final-plateau7]]
 
-* (New materials from here) Connection to Type-based GBFS   :noexport:AAAI16:
+* (New materials from here) Connection to Type-based GBFS          :noexport:
 
 *Search Diversification* method for *GBFS*
 
@@ -591,14 +586,36 @@ Type-based bucket $\langle g, h \rangle$ (Xie 14):
 
 RandomDepth (AAAI16) is a variant of type-based, but *restricted within a plateau*: $[ f, h, \langle d \rangle ]$
 
-* Why the satisficing technique is helpful in optimal search?
+* A* behavior revisited
 
-*Because indeed optimal search is using satisficing search*
+[[png:astar/astar1]]
 
-+ A* $[ f, h, \text{fifo} ]$  : Performing *GBFS [h, fifo] on each plateau*
-+ A* $[ f, \text{fifo} ]$  : Performing a *blind breadth-first search [fifo] on each plateau*
+** A* behavior revisited
 
-Reinterpretation of A∗ as */iterations of satisficing search on plateaus/*:
+ [[png:astar/astar2]]
+
+** A* behavior revisited
+
+ [[png:astar/astar3]]
+
+** A* behavior revisited
+
+ [[png:astar/astar4]]
+
++ *The order of expansion within each plateau does not affect the optimality of the solution*
+
++ Within each plateau, the path to optimal solutions can be arbitrary longer
+
+#+begin_alignright
+#+begin_larger
++ We are runnning a *satisficing search* on each plateau
+#+end_larger
+#+end_alignright
+
+* Reinterpret A∗ as */iterations of satisficing search on plateaus/*:
+
++ A* $[ f, h, \text{fifo} ]$  : Performing *GBFS [h, fifo] on each plateau(f)*
++ A* $[ f, \text{fifo} ]$  : Performing a *blind breadth-first search [fifo] on each plateau(f)* and therefore slower
 
 #+begin_src bash
 while true
@@ -650,7 +667,6 @@ while true
 
 ** A* as satisficing search
 
-
 #+begin_container-fluid
 #+begin_row-fluid
 #+begin_span7
@@ -676,7 +692,7 @@ Implication:
 #+end_span7
 #+begin_span5
 #+begin_larger
-+ Optimal solutions as long as *f* is admissible
++ Results are optimal as long as *f* is admissible
 #+end_larger
 #+end_span5
 #+end_row-fluid
@@ -686,13 +702,15 @@ Implication:
 
 + Standard A* :: $[f, h,$  * $]\;$ where * is one of LIFO, FIFO, Random
 
-+ Using unit-cost heuristics $\hat{h}\;$ : treats every edge costs as 1 (Previously used for LAMA) ::
++ Tiebreak with unit-cost heuristics $\hat{h}\;$ : treats every edge costs as 1 (Previously used for LAMA) ::
      $[f, \hat{h}, * ]$, $[f, h, \hat{h}, * ]$ -- large overhead for $\hat{h}^{\text{LMcut}}, \hat{h}^{\text{M&S}}$
 
-+ Using unit-cost inadmissible heuristics $\hat{h}^{FF}$ ::
-     $[f, \hat{h}^{FF}, *]$ , $[f, h, \hat{h}^{FF}, * ]$ -- faster tiebreaking heuristics
+     Purpose: to see pure improvements by 
 
-+ Combine it with random depth ::
++ Tiebreak with unit-cost inadmissible heuristics $\hat{h}^{FF}$ ::
+     $[f, \hat{h}^{FF}, *]$ , $[f, h, \hat{h}^{FF}, * ]$ -- cheaper, non-path-optimal heuristics
+
++ Combined with random depth tiebreaking [Asai, AAAI16] ::
      $[f, \hat{h}^{FF}, \langle d \rangle$ , * $]$
 
 * Evaluation (domains)
@@ -720,10 +738,6 @@ such as wood, fuel or electricity.
 
 We created 620 zerocost instances consisting of 28 domains.
 #+end_resume
-
-* Industrial Impact of Zero-Cost
-
-
 
 * Evaluation ($h=\text{LMcut}$, Zerocost domains)
 
@@ -753,72 +767,89 @@ We created 620 zerocost instances consisting of 28 domains.
 | $[f,\hat{h}^{FF},\langle d \rangle,*]$ |   *337* |   *333* |   _337.6_ |
 |                                        |   (+50) |   (+30) |     (+50) |
 
-
-* Simple Dynamic Configuration for Overall Performance               :時間使い過ぎ:
+* Simple Dynamic Configuration for Overall Performance
 
 $[f=g+h, \hat{h}^{FF}]$ --- Computing 2 different heuristics
 
 + Only beneficial when the plateau is huge (especially the domain contains zerocost)
 
-+ Negative effect on IPC *except* Cybersec, Openstack
-
 + Let's disable it when this is not the case
 
 IPC+Zerocost results
 
-#+begin_container-fluid
-#+begin_row-fluid
-#+begin_span6
-|---+----------------------------------------------------+-------+-------|
-|   | *Single heuristics*                                | LMcut |   M&S |
-|---+----------------------------------------------------+-------+-------|
-| / | $[f,h,\text{fifo}]$                                |   814 |   771 |
-|   | $[f,h,\text{lifo}]$                                |   844 |   797 |
-| / | $[f,h,\text{Random}]$                              | 820.8 | 777.1 |
-|   | $[f,h,\langle d \rangle,\text{fifo}]$              |   855 |   789 |
-|   | $[f,h,\langle d \rangle,\text{lifo}]$              |   839 |   775 |
-|   | $[f,h,\langle d \rangle,\text{Random}]$            | 859.5 | 793.7 |
-| / | [0.3em] Distance-to-Go                             |       |       |
-| / | $[f,\hh,\text{fifo}]$                              |   829 |   785 |
-| / | $[f,\hh,\text{lifo}]$                              |   837 |   780 |
-| / | $[f,\hh,\text{Random}]$                            |  835. | 777.7 |
-| / | $[f,h,\hh,\text{fifo}]$                            |   841 |   783 |
-| / | $[f,h,\hh,\text{lifo}]$                            |   844 |   781 |
-| / | $[f,h,\hh,\text{Random}]$                          | 840.6 | 778.7 |
-|---+----------------------------------------------------+-------+-------|
-|   | *Multi heuristics*                                 |       |       |
-| / | $[f,\hat{h}^{FF},\text{fifo}]$                     |   901 |   794 |
-| / | $[f,\hat{h}^{FF},\text{lifo}]$                     |   902 |   788 |
-| / | $[f,\hat{h}^{FF},\text{Random}]$                   | 904.7 | 794.9 |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{fifo}]$   |   903 |   794 |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{lifo}]$   |   902 |   790 |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ | 906.2 | 794.4 |
-|---+----------------------------------------------------+-------+-------|
-#+end_span6
-#+begin_span6
-|---+-------------------------------------------------------------------------------------------------+---------+---------|
-|   | Dynamic Configuration                                                                           | LMcut   | M&S     |
-|---+-------------------------------------------------------------------------------------------------+---------+---------|
-|   | If a problem contains zerocost actions:                                                         |         |         |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ ; Else $[f,h,\langle d \rangle,\text{lifo}]$ | *911.9* |         |
-|   |                                                                                                 |         |         |
-|   | If a problem contains zerocost actions:                                                         |         |         |
-|   | $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ ; Else $[f,h,\text{lifo}]$                   |         | *832.3* |
-|---+-------------------------------------------------------------------------------------------------+---------+---------|
-#+end_span6
-#+end_row-fluid
-#+end_container-fluid
+|---+------------------------------------------------------+---------+---------|
+|   | *Single heuristics*                                  |   LMcut |     M&S |
+|---+------------------------------------------------------+---------+---------|
+| / | $[f,h,\text{fifo}]$                                  |     814 |     771 |
+|   | A $[f,h,\text{lifo}]$                                |     844 |     797 |
+| / | $[f,h,\text{Random}]$                                |   820.8 |   777.1 |
+| / | $[f,h,\langle d \rangle,\text{fifo}]$                |     855 |     789 |
+|   | B $[f,h,\langle d \rangle,\text{lifo}]$              |     839 |     775 |
+| / | $[f,h,\langle d \rangle,\text{Random}]$              |   859.5 |   793.7 |
+| / | [0.3em] Distance-to-Go                               |         |         |
+| / | $[f,\hh,\text{fifo}]$                                |     829 |     785 |
+| / | $[f,\hh,\text{lifo}]$                                |     837 |     780 |
+| / | $[f,\hh,\text{Random}]$                              |    835. |   777.7 |
+| / | $[f,h,\hh,\text{fifo}]$                              |     841 |     783 |
+| / | $[f,h,\hh,\text{lifo}]$                              |     844 |     781 |
+| / | $[f,h,\hh,\text{Random}]$                            |   840.6 |   778.7 |
+|---+------------------------------------------------------+---------+---------|
+|   | *Multi heuristics*                                   |   LMcut |     M&S |
+|---+------------------------------------------------------+---------+---------|
+| / | $[f,\hat{h}^{FF},\text{fifo}]$                       |     901 |     794 |
+| / | $[f,\hat{h}^{FF},\text{lifo}]$                       |     902 |     788 |
+| / | $[f,\hat{h}^{FF},\text{Random}]$                     |   904.7 |   794.9 |
+| / | $[f,\hat{h}^{FF},\langle d \rangle,\text{fifo}]$     |     903 |     794 |
+| / | $[f,\hat{h}^{FF},\langle d \rangle,\text{lifo}]$     |     902 |     790 |
+|   | C $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$ |   906.2 |   794.4 |
+|---+------------------------------------------------------+---------+---------|
+|   | Dynamic Configuration                                |   LMcut |     M&S |
+|---+------------------------------------------------------+---------+---------|
+|   | If zerocost actions exist: C ; Else B                | *911.9* |         |
+|   | If zerocost actions exist: C ; Else A                |         | *832.3* |
+|---+------------------------------------------------------+---------+---------|
 
-* depth 削って tiebreaking ごとの completeness
+* Completeness of A* on Infinite Graph
+
+Dechter and Pearl (1985): [[spng:pearl-cost]]
+
++ Results do not apply to zerocost domains
++ Turned out, conditions for completeness depends on the tiebreaking
+
+(P1) If any plateau(f) for f < f^∗ is infinite, then A^∗ does not terminate.
+
+(P2) Assume plateau(f) is finite \forall f < f^∗:
+
++ Completeness depends on tiebreaking on plateau(f^*)
+
+** Completeness of A* on Infinite Graph
+
+ (P2) Assume plateau(f) is finite \forall f < f^∗:
+
+ Completeness depends on tiebreaking on plateau(f^*)
+
+ More specifically, *the completeness of satisficing search algorithm used for tiebreaking*
+  
+   |                      |                                                                   |
+   | FIFO [f, fifo]       | Complete with a finite outdegree below the minimum solution depth |
+   |                      | → because *Breadth-first search [fifo] requires it*              |
+   | LIFO [f, lifo]       | Complete when plateau(f^*) is also finite                         |
+   |                      | → because *Depth-First Search [lifo] requires it*                |
+   | Random Order [f, ro] | Probabilistically Complete                                        |
+   |                      | → because *[ro] is Prob. Complete [Valenzano AAAI16]*            |
+
+ + *We can also carry the completeness proof over to optimal search!*
 
 * Conclusion & Future Work
 
 + A* as a sequence of satisficing search on each plateau
 + Demonstrated the use of inadmissible heuristics for optimal search
++ Leveraged the completeness proof for satisficing search for optimal search
 + Many potential extensions
   + Use *plateau-limited macro actions* (cf. Marvin, but different purpose)
   + *Plateau-limited monte-carlo random walk* (cf. Arvand)
-  + Direct analogue for model-based planners (SAT/IP/CSP-based planners)
+
+#  + Direct analogue for model-based planners (SAT/IP/CSP-based planners)
 
 * Old evaluation                                                   :noexport:
 ** Evaluation (participants)
