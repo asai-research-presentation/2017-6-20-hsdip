@@ -1,0 +1,36 @@
+make[1]: 警告: 副次 make で -jN を強制指定しました: jobserver モードを無効にします.
+make[1]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip' に入ります
+make -C img
+make -C css
+make[2]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip/img' に入ります
+make[2]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip/css' に入ります
+sass --update .
+make[2]: 'all' に対して行うべき事はありません.
+make[2]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip/img' から出ます
+make -C scripts
+make[2]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip/scripts' に入ります
+make[2]: 'all' に対して行うべき事はありません.
+make[2]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip/scripts' から出ます
+scripts/org-html.sh presen.org presen.org.html
+Loading /home/guicho/repos/presentations/2017-6-20-hsdip/scripts/compile-org-html.el (source)...
+make[2]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip/css' から出ます
+Org-mode version 8.3.6 (8.3.6-dist @ /home/guicho/repos/presentations/2017-6-20-hsdip/org-mode/lisp/)
+Setting up indent for shell type bash
+Indentation variables are now local.
+Indentation setup for shell type bash
+Setting up indent for shell type bash
+Indentation variables are now local.
+Indentation setup for shell type bash
+Setting up indent for shell type bash
+Indentation variables are now local.
+Indentation setup for shell type bash
+Setting up indent for shell type bash
+Indentation variables are now local.
+Indentation setup for shell type bash
+Setting up indent for shell type bash
+Indentation variables are now local.
+Indentation setup for shell type bash
+Saving file /home/guicho/repos/presentations/2017-6-20-hsdip/presen.org.html...
+Wrote /home/guicho/repos/presentations/2017-6-20-hsdip/presen.org.html
+cp -f presen.org.html index.html
+make[1]: ディレクトリ '/home/guicho/repos/presentations/2017-6-20-hsdip' から出ます

@@ -1,0 +1,1498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2017-06-16 金 11:06 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tie-Breaking in A* as Satisficing Search</title>
+<meta  name="generator" content="Org-mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="css/layout.css" />
+<link rel="stylesheet" type="text/css" href="css/default.css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.loupe.min.js"></script>
+<script type="text/javascript" src="js/jgestures/jgestures.min.js"></script>
+<script type="text/javascript" src="js/code.js"></script>
+<script type="text/javascript" src="MathJax/MathJax.js"></script>
+<script type="text/javascript" src="js/mathjaxconf.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Tie-Breaking in A* as Satisficing Search</h1>
+<div class="outline-text-1">
+<div class="org-center">
+<p>
+
+</p>
+
+<div class="larger">
+<p>
+<span class="underline">Masataro Asai</span>, Alex Fukunaga, The University of Tokyo
+</p>
+
+</div>
+
+<p>
+15 min
+</p>
+
+<p>
+† This paper presents work from Sections 7-8 from a recent journal paper (Asai
+and Fukunaga 2017). This work has not been previously presented in any
+conference or workshop.
+</p>
+</div>
+
+<div class="note">
+<div class="alignright">
+<p>
+Made by guicho2.71828 (Masataro Asai)
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1"><span class="section-number-2">1</span> Summary: <i>We propose a new tool to improve/analyse A*</i></h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li><div class="larger">
+<p>
+Optimal search and satisficing search are <b>incompatible</b>.
+</p>
+
+</div>
+<ul class="org-ul">
+<li>different algorithms (A* vs GBFS)</li>
+<li>different theoretical requirements (admissibility etc..)</li>
+</ul></li>
+
+<li><div class="larger">
+<p>
+Can we use FF heuristics for optimal search?
+</p>
+
+</div></li>
+</ul>
+
+<div class="xlarge">
+<div class="org-center">
+<ul class="org-ul">
+<li>Yes, we can!</li>
+</ul>
+</div>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2"><span class="section-number-2">2</span> Optimal Search with A* &#x2026;</h2>
+<div class="outline-text-2" id="text-2">
+
+<div class="figure">
+<p><img src="img/astar.png" alt="astar.png" />
+</p>
+</div>
+
+<div class="resume">
+<p>
+currently, the most prevarent method for optimal graph search is A* algorithm.
+In A*, a node has g-value, which is the current shortest cost from the initial state,
+and h-value, which is a result of a heuristic function h, which should be admissible in the optimal search.
+Their sum, f, is a lower bound of the cost of the shortest path, f*.
+</p>
+
+<p>
+In order to prove optimality,
+A* is required to expand all nodes whose f is smaller than f*.  Due to this
+requirement, A* expands the nodes with the smallest f value each time.
+</p>
+
+<p>
+However, this description lacks one important aspect of A*.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline3" class="outline-2">
+<h2 id="orgheadline3"><span class="section-number-2">3</span> Optimal Search with A* &#x2026; w/o Tiebreaking Strategy.</h2>
+<div class="outline-text-2" id="text-3">
+
+<div class="figure">
+<p><img src="img/astar-emph.png" alt="astar-emph.png" />
+</p>
+</div>
+
+<div class="resume">
+<p>
+The aspect is the tiebreaking strategy. What happens when more than 2 nodes
+have the same f-minimum? In such cases, a tiebreaking strategy should select which node to expand.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline4" class="outline-2">
+<h2 id="orgheadline4"><span class="section-number-2">4</span> Conventional Wisdom regarding Tiebreaking</h2>
+<div class="outline-text-2" id="text-4">
+<div class="org-center">
+<p>
+How to select from multiple nodes with the same <i>f<sub>min</sub></i>?
+</p>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">Tiebreaking</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><b>Early work</b></td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left"><i>1968 Hart, Nilsson and Raphael</i></td>
+<td class="org-left"><b><i>h</i>-based tiebreaking</b> [ <i>h</i> ] :</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">　　 &#x2013; selects the least h value</td>
+</tr>
+
+<tr>
+<td class="org-left"><i>common around 1985</i></td>
+<td class="org-left"><b>LIFO tiebreaking</b> [LIFO] :</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">　　 &#x2013; selects the most recently generated</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left"><b>Recent years&#x2026;</b></td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left"><i>2007 Hansen and Zhou</i></td>
+<td class="org-left">[ <i>h</i> ] "well-known to achieve</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">　　　　　　the best performance"</td>
+</tr>
+
+<tr>
+<td class="org-left"><i>2010 Holte</i></td>
+<td class="org-left">[ <i>h</i> ] "most often done"</td>
+</tr>
+</tbody>
+</table>
+
+<div class="alignright">
+<p>
+<b>Rule-of-Thumb is [ <i>h</i> ] but it's like a folklore!</b>
+</p>
+
+</div>
+
+<div class="resume">
+<p>
+There are several conventional wisdoms on the tiebreaking of A*.
+</p>
+
+<p>
+In the earliest work, 
+the original paper on A* by Hart, Nilsson and Raphael
+proposed a strategy of selecting the nodes with the least h value.
+We call this tiebreaking as h-based tiebreaking, and use the notation surrounded by brackets.
+</p>
+
+<p>
+Another important method is LIFO tiebreaking, which expands a node in most-recently-generated-first.
+It seems to be common already in 1985.
+</p>
+
+<p>
+In recent years, we rarely find a detailed description on tiebreaking.
+It is sometimes said: it's known to perform well or it's common.
+There are sometimes no mention at all.
+</p>
+
+<p>
+Overall, it seems that the current rule-of-thumb is to use h-based tiebreaking.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline5" class="outline-2">
+<h2 id="orgheadline5"><span class="section-number-2">5</span> [ <i>h</i> ] is underspecified</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+<b>What happens if there are still <i>multiple</i> nodes with the same <i>h</i> ?</b>
+</p>
+
+<p>
+→ There must be a <b>2nd Tiebreaking <i>X</i></b> : denoted as [ <i>h</i> , <b><i>X</i></b> ]
+</p>
+
+<p>
+Example &#x2013; A* with <b>[ <i>h</i> , <i>LIFO</i> ]</b> : Selects the nodes with <i>f<sub>min</sub></i>. 
+</p>
+
+<ul class="org-ul">
+<li><b>IF</b> multiple nodes have <i>f<sub>min</sub></i>, selects the nodes with <i>h<sub>min</sub></i>  (1st tiebreaking).</li>
+<li><p>
+<b>IF</b> multiple nodes have <i>h<sub>min</sub></i>, select the most recent node (2nd tiebreaking).
+</p>
+<div class="alignright">
+<div class="smaller">
+<p>
+(i.e. popping a LIFO queue: always returns exactly 1 node)
+</p>
+
+</div>
+
+</div></li>
+</ul>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Solver code on github by <i>2012 Burns et. al.</i></td>
+<td class="org-left">[ <i>h</i>, LIFO (<b>not documented</b>)]</td>
+</tr>
+
+<tr>
+<td class="org-left">(current) Fast Downward</td>
+<td class="org-left">[ <i>h</i>, FIFO (<b>not documented</b>)]</td>
+</tr>
+</tbody>
+</table>
+
+<div class="resume">
+<p>
+However, h-based tiebreaking has a severe problem that it is still underspecified.
+What happens if there are still multiple nodes with the same h?
+There should be some further tiebreaking criteria which selects exactly one node among them.
+In most papers, this kind of detail is not mentioned at all.
+</p>
+
+<p>
+We found that the implementation by burns et. al. uses h-based tiebreaking followed by LIFO tiebreaking,
+and the current fast downward uses h-based tiebreaking followed by FIFO tiebreaking.
+Both of these are not specified in the paper.
+In other words, these details are not considered important.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline6" class="outline-2">
+<h2 id="orgheadline6"><span class="section-number-2">6</span> In Fact, Tiebreaking is Quite Important</h2>
+<div class="outline-text-2" id="text-6">
+<div class="larger">
+<div class="org-center">
+<p>
+<b>Most of the runtime, search is controlled</b>
+</p>
+
+<p>
+<b><i>solely by the tiebreaking</i>.</b>
+</p>
+</div>
+
+</div>
+
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span6">
+
+<div class="figure">
+<p><img src="img/without-h-nokey.png" alt="without-h-nokey.png" />
+</p>
+</div>
+
+</div>
+<div class="span6">
+<p>
+
+</p>
+
+<p>
+←In the standard benchmark sets,
+</p>
+
+<div class="larger">
+<div class="org-center">
+<p>
+<b>Most nodes have f=f<sup>*</sup></b>.
+</p>
+
+<p>
+(i.e. <b>Final Plateau</b>, 　　
+</p>
+
+<p>
+where the solutions exist)
+</p>
+</div>
+
+<p>
+　
+</p>
+
+<div class="org-center">
+<p>
+<b>Tiebreaking controls the most of the search.</b>
+</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="resume">
+<p>
+However, tiebreaking is actually quite important.
+We plotted the number of nodes whose f value is equal to f*,
+versus those with f value less than equal to f*,
+</p>
+
+<p>
+In this figure, we can see that the most nodes have the f value equal to f*.
+We call these nodes as the final plateau.
+</p>
+
+<p>
+The final plateau is where the optimal solutions exist.
+And where all nodes have the same f-value.
+</p>
+
+<p>
+Thus, in this plateau,
+the search is controlled solely by the tiebreaking.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline7" class="outline-2">
+<h2 id="orgheadline7"><span class="section-number-2">7</span> Comparing [h,FIFO] and [h,LIFO] per Domain (Instance Set)</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+Significant performance difference by merely changing the 2nd tiebreaking
+</p>
+
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span6">
+
+<div class="figure">
+<p><img src="img/lifo-vs-fifo.png" alt="lifo-vs-fifo.png" />
+</p>
+</div>
+
+</div>
+<div class="span6">
+<p>
+
+</p>
+
+<div class="org-center">
+<p>
+The difference occurs only in
+</p>
+
+<div class="larger">
+<p>
+<b>Openstacks</b> &amp; <b>Cybersec</b>
+</p>
+
+</div>
+
+<p>
+<b>LIFO is x10 faster than FIFO</b>
+</p>
+
+<p>
+(In other domains the performance is comparable.)
+</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="resume">
+<p>
+what is the reason behind this?  From the domain-wise investigation, we
+found that this is caused mainly by the Cybersec and Openstacks domains.
+</p>
+
+<p>
+We plotted the number of evaluations by each strategy in x-y plot. As we
+see, their difference is small in most domains except Openstacks
+and Cybersec.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline8" class="outline-2">
+<h2 id="orgheadline8"><span class="section-number-2">8</span> What makes <i>Openstacks</i> &amp; <i>Cybersec</i> Different?</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+They have many <b>zero-cost actions</b>
+</p>
+
+<p>
+Used in many <b>practical applications</b> w/ <b>key resource minimization</b>
+</p>
+
+<ul class="org-ul">
+<li><p>
+Consider a <b>transportation domain w/ fuel minimization.</b>
+</p>
+<div class="alignright">
+<p>
+Assign 0 cost to all actions <b>except drive-truck</b>
+</p>
+
+<p>
+Loading packages do not consume fuel.
+</p>
+
+</div></li>
+<li><p>
+<b>Openstacks is an application domain</b> from Operations Research (Fink and Voss, 1999)
+</p>
+<div class="alignright">
+<p>
+minimize the # of stacks, 0-cost unless consuming stacks.
+</p>
+
+</div></li>
+<li><p>
+<b>Cybersec is also an application domain.</b> (BAMS, Boddy et. al.)
+</p>
+<div class="alignright">
+<p>
+The great talk by Joerg Hoffmann in the last ICAPS!
+</p>
+
+</div></li>
+</ul>
+
+<div class="smaller">
+<p>
+Zerocost actions makes problems more difficult (W［2］-complete → para-NP-hard) [Aghighi,IJCAI15]
+</p>
+
+<p>
+Approaches for zerocost domains: Pearl&amp;Kim (82), Thayer&amp;Ruml(09,11), Cushing(10), Richter(11), Benton(10)
+</p>
+
+</div>
+
+<div class="resume">
+<p>
+These domains are characteristic by its large number of zero-cost actions.
+</p>
+
+<p>
+Addressing the problem caused by zero-cost actions is important because it
+frequently appears in practial application domains.
+</p>
+
+<p>
+First of all, both of these domains originates from industrial applications.
+Openstacks originates from Operations Resarch.
+Regarding Cybersec, I hope the listeners remember the great talk by jorg hoffman in the last ICAPS.
+</p>
+
+<p>
+Another interesting example is a realistic transportation domain with fuel optimization.
+In such as setting, the domain will assign 0 to all action costs except drive-truck.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline13" class="outline-2">
+<h2 id="orgheadline13"><span class="section-number-2">9</span> Zero-cost actions makes <i>h</i>-Tiebreaking difficult</h2>
+<div class="outline-text-2" id="text-9">
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span6">
+
+<div class="figure">
+<p><img src="img/with-h-nokey.png" alt="with-h-nokey.png" />
+</p>
+</div>
+
+</div>
+<div class="span6">
+<p>
+
+</p>
+
+<div class="org-center">
+<p>
+← A stricter subset of final plateau with <b>f=f<sup>*</sup></b>, <b>h=0</b>
+</p>
+
+<p>
+In <b>Openstacks</b> &amp; <b>Cybersec</b>,
+</p>
+
+<p>
+Almost all nodes have <b>h=0</b>.
+</p>
+
+<div class="larger">
+<p>
+<b>⇒ <i>h</i>-tiebreaking has</b>
+</p>
+
+<p>
+<b>no effect</b>
+</p>
+
+</div>
+
+<div class="larger">
+<p>
+<b>⇒search is controlled <i>solely by the 2nd tiebreaking</i></b>
+</p>
+
+<p>
+<b><i>LIFO or FIFO</i></b>
+</p>
+
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="alignright">
+<p>
+Thus, <b>to improve upon LIFO</b>, we should understand these search spaces.
+</p>
+
+</div>
+
+<div class="resume">
+<p>
+Well, I didn't explained exaclty why these zero-cost made the difference.
+</p>
+
+<p>
+These domains are unfriendly to h-based tiebreaking. This is a plot of the final plateau, with differnt definition.
+This time, not only f is equal to f*, but also h should be equal to 0.
+</p>
+
+<p>
+In openstacs and cybersec, almost all nodes are on the x-y line.
+In other words, at almsot all search nodes, h=0.
+In these domains, h-tiebreaking has almost no effect.
+</p>
+
+<p>
+Thus, to improve upon LIFO, we should understand Final Plateau.
+</p>
+
+</div>
+</div>
+
+<div id="outline-container-orgheadline9" class="outline-3">
+<h3 id="orgheadline9"><span class="section-number-3">9.1</span> Understanding the Final Plateau</h3>
+<div class="outline-text-3" id="text-9-1">
+
+<div class="figure">
+<p><img src="img/final-plateau0.png" alt="final-plateau0.png" />
+</p>
+</div>
+
+<div class="resume">
+<p>
+First of all, this is the traditional understanding of the search space of
+A*. However, this is actually not the case, because
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline10" class="outline-3">
+<h3 id="orgheadline10"><span class="section-number-3">9.2</span> Understanding the Final Plateau</h3>
+<div class="outline-text-3" id="text-9-2">
+
+<div class="figure">
+<p><img src="img/final-plateau.png" alt="final-plateau.png" />
+</p>
+</div>
+
+<div class="resume">
+<p>
+in fact, most nodes are in the large final plateau.
+This is the same whether it is positive or zero-cost.
+Without proper tiebreaking strategy, the planner has no guidance,
+because any heuristic estimates are the same almost everywhere.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline11" class="outline-3">
+<h3 id="orgheadline11"><span class="section-number-3">9.3</span> Understanding the Final Plateau</h3>
+<div class="outline-text-3" id="text-9-3">
+<p>
+In positive cost domains,
+</p>
+
+
+<div class="figure">
+<p><img src="img/final-plateau2.png" alt="final-plateau2.png" />
+</p>
+</div>
+
+<div class="resume">
+<p>
+In positive-cost domains, the h-based tiebreaking is useful because it provides a gradient toward the goal.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline12" class="outline-3">
+<h3 id="orgheadline12"><span class="section-number-3">9.4</span> But when almost all edges are 0-cost&#x2026;</h3>
+<div class="outline-text-3" id="text-9-4">
+
+<div class="figure">
+<p><img src="img/final-plateau3.png" alt="final-plateau3.png" />
+</p>
+</div>
+
+<div class="resume">
+<p>
+However, in zero-cost domains, almost all h values are 0, and h-based tiebreaking is useless.
+The problem is, how can we give a useful guidance in such a region?
+</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline17" class="outline-2">
+<h2 id="orgheadline17"><span class="section-number-2">10</span> A* behavior revisited</h2>
+<div class="outline-text-2" id="text-10">
+
+<div class="figure">
+<p><img src="img/astar/astar1.png" alt="astar1.png" />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline14" class="outline-3">
+<h3 id="orgheadline14"><span class="section-number-3">10.1</span> A* behavior revisited</h3>
+<div class="outline-text-3" id="text-10-1">
+
+<div class="figure">
+<p><img src="img/astar/astar2.png" alt="astar2.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline15" class="outline-3">
+<h3 id="orgheadline15"><span class="section-number-3">10.2</span> A* behavior revisited</h3>
+<div class="outline-text-3" id="text-10-2">
+
+<div class="figure">
+<p><img src="img/astar/astar3.png" alt="astar3.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline16" class="outline-3">
+<h3 id="orgheadline16"><span class="section-number-3">10.3</span> A* behavior revisited</h3>
+<div class="outline-text-3" id="text-10-3">
+
+<div class="figure">
+<p><img src="img/astar/astar4.png" alt="astar4.png" />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><b>The order of expansion within each plateau does not affect the optimality of the solution</b></li>
+
+<li>Within each plateau, the path to optimal solutions can be arbitrary longer</li>
+</ul>
+
+<div class="alignright">
+<div class="larger">
+<ul class="org-ul">
+<li>We are runnning a <b>satisficing search</b> on each plateau</li>
+</ul>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline22" class="outline-2">
+<h2 id="orgheadline22"><span class="section-number-2">11</span> Reinterpret A∗ as <b><i>iterations of satisficing search on plateaus</i></b>:</h2>
+<div class="outline-text-2" id="text-11">
+<ul class="org-ul">
+<li>A* $[ f, h, \text{fifo} ]$: Performing <b>GBFS [h, fifo] on each plateau(f)</b></li>
+<li>A* $[ f, \text{fifo} ]$: Performing a <b>blind breadth-first search [fifo] on each plateau(f)</b> and therefore slower</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-bash"><span style="color: #a020f0;">while</span> true
+    satisficing_search( plateau(f))
+    <span style="color: #a020f0;">if</span> plateau (f) is SAT; <span style="color: #a020f0;">then</span>
+       <span style="color: #a020f0;">return</span> solution
+    <span style="color: #a020f0;">else</span>
+       Increase f
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgheadline18" class="outline-3">
+<h3 id="orgheadline18"><span class="section-number-3">11.1</span> A* as satisficing search</h3>
+<div class="outline-text-3" id="text-11-1">
+<div class="org-src-container">
+
+<pre class="src src-bash"><span style="color: #a020f0;">while</span> true
+    satisficing_search( plateau(f))
+    <span style="color: #a020f0;">if</span> plateau (f) is SAT; <span style="color: #a020f0;">then</span>
+       <span style="color: #a020f0;">return</span> solution
+    <span style="color: #a020f0;">else</span>
+       Increase f
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="img/sat/sat-astar1.png" alt="sat-astar1.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline19" class="outline-3">
+<h3 id="orgheadline19"><span class="section-number-3">11.2</span> A* as satisficing search</h3>
+<div class="outline-text-3" id="text-11-2">
+<div class="org-src-container">
+
+<pre class="src src-bash"><span style="color: #a020f0;">while</span> true
+    satisficing_search( plateau(f))
+    <span style="color: #a020f0;">if</span> plateau (f) is SAT; <span style="color: #a020f0;">then</span>
+       <span style="color: #a020f0;">return</span> solution
+    <span style="color: #a020f0;">else</span>
+       Increase f
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="img/sat/sat-astar2.png" alt="sat-astar2.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline20" class="outline-3">
+<h3 id="orgheadline20"><span class="section-number-3">11.3</span> A* as satisficing search</h3>
+<div class="outline-text-3" id="text-11-3">
+<div class="org-src-container">
+
+<pre class="src src-bash"><span style="color: #a020f0;">while</span> true
+    satisficing_search( plateau(f))
+    <span style="color: #a020f0;">if</span> plateau (f) is SAT; <span style="color: #a020f0;">then</span>
+       <span style="color: #a020f0;">return</span> solution
+    <span style="color: #a020f0;">else</span>
+       Increase f
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="img/sat/sat-astar3.png" alt="sat-astar3.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline21" class="outline-3">
+<h3 id="orgheadline21"><span class="section-number-3">11.4</span> A* as satisficing search</h3>
+<div class="outline-text-3" id="text-11-4">
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span7">
+<div class="org-src-container">
+
+<pre class="src src-bash"><span style="color: #a020f0;">while</span> true
+    satisficing_search( plateau(f))
+    <span style="color: #a020f0;">if</span> plateau (f) is SAT; <span style="color: #a020f0;">then</span>
+       <span style="color: #a020f0;">return</span> solution
+    <span style="color: #a020f0;">else</span>
+       Increase f
+</pre>
+</div>
+
+</div>
+<div class="span5">
+<p>
+Implication: 
+</p>
+<div class="larger">
+<ul class="org-ul">
+<li><b>Any complete satisficing technique</b> can be embedded in optimal planning</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+<div class="row-fluid">
+<div class="span7">
+
+<div class="figure">
+<p><img src="img/sat/sat-astar4.png" alt="sat-astar4.png" />
+</p>
+</div>
+
+</div>
+<div class="span5">
+<div class="larger">
+<ul class="org-ul">
+<li>Results are optimal as long as <b>f</b> is admissible</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline23" class="outline-2">
+<h2 id="orgheadline23"><span class="section-number-2">12</span> Using some satisficing techniques for optimal planning</h2>
+<div class="outline-text-2" id="text-12">
+<dl class="org-dl">
+<dt>Standard A*</dt><dd>$[f, h,$  * $]\;$where * is one of LIFO, FIFO, Random</dd>
+
+<dt>Tiebreak with unit-cost heuristics $\hat{h}\;$: treats every edge costs as 1 (Previously used for LAMA)</dt><dd><p>
+     $[f, \hat{h}, * ]$, $[f, h, \hat{h}, * ]$&#x2013; large overhead for $\hat{h}^{\text{LMcut}}, \hat{h}^{\text{M&amp;S}}$
+</p>
+
+<p>
+Purpose: to see pure improvements by 
+</p></dd>
+
+<dt>Tiebreak with unit-cost inadmissible heuristics $\hat{h}^{FF}$</dt><dd>$[f, \hat{h}^{FF}, *]$, $[f, h, \hat{h}^{FF}, * ]$&#x2013; cheaper, non-path-optimal heuristics</dd>
+
+<dt>Combined with random depth tiebreaking [Asai, AAAI16]</dt><dd>$[f, \hat{h}^{FF}, \langle d \rangle$, * $]$</dd>
+</dl>
+</div>
+</div>
+
+<div id="outline-container-orgheadline24" class="outline-2">
+<h2 id="orgheadline24"><span class="section-number-2">13</span> Evaluation (domains)</h2>
+<div class="outline-text-2" id="text-13">
+<ul class="org-ul">
+<li>IPC<sup>1</sup> Instances (1104 instances)</li>
+<li><b>Zero-cost</b> domains (620 instances, 28 domains)
+<ul class="org-ul">
+<li>Modified IPC<sup>1</sup>  optimal track instances</li>
+<li>Assign 0 cost to all actions <b>except one</b></li>
+<li>which consumes a <b>realistic key resource</b>. For example,
+<ul class="org-ul">
+<li><code>cut</code> consumes <code>wood</code> in Woodworking</li>
+<li><code>drive-truck</code> consumes <code>fuel</code> in Driverslog (transportation domain)</li>
+<li>etc..</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<div class="note">
+<p>
+1 &#x2013; IPC : International Planning Competition
+</p>
+
+</div>
+
+<div class="resume">
+<p>
+Finally, the experimental evaluation.  Along with the original IPC
+instances, we introduce Zero-cost domains, which are the instances we
+assigned cost 0 to all actiosn except one.
+</p>
+
+<p>
+The one which has a positive cost represents a realistic key resource,
+such as wood, fuel or electricity.
+</p>
+
+<p>
+We created 620 zerocost instances consisting of 28 domains.
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline25" class="outline-2">
+<h2 id="orgheadline25"><span class="section-number-2">14</span> Evaluation ($h=\text{LMcut}$, Zerocost domains)</h2>
+<div class="outline-text-2" id="text-14">
+<p>
+5min, 4GB
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-right">＊=FIFO</th>
+<th scope="col" class="org-right">＊=LIFO</th>
+<th scope="col" class="org-right">＊=Random</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">$[f,h,*]$</td>
+<td class="org-right">256</td>
+<td class="org-right">279</td>
+<td class="org-right">261.9</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,h,\langle d \rangle,*]$</td>
+<td class="org-right">284</td>
+<td class="org-right">264</td>
+<td class="org-right">288.1</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,\hat{h},*]$</td>
+<td class="org-right">295</td>
+<td class="org-right">303</td>
+<td class="org-right">301.0</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,h,\hat{h},*]$</td>
+<td class="org-right">305</td>
+<td class="org-right">309</td>
+<td class="org-right">305.9</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,\hat{h}^{FF},*]$</td>
+<td class="org-right">337</td>
+<td class="org-right">340</td>
+<td class="org-right">341</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,\hat{h}^{FF},\langle d \rangle,*]$</td>
+<td class="org-right"><b>340</b></td>
+<td class="org-right"><b>342</b></td>
+<td class="org-right"><b>344.3</b></td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-right">(+80)</td>
+<td class="org-right">(+60)</td>
+<td class="org-right">(+80)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orgheadline26" class="outline-2">
+<h2 id="orgheadline26"><span class="section-number-2">15</span> Evaluation ($h=\text{M&amp;S}$, Zerocost domains)</h2>
+<div class="outline-text-2" id="text-15">
+<p>
+5min, 4GB
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-right">＊=FIFO</th>
+<th scope="col" class="org-right">＊=LIFO</th>
+<th scope="col" class="org-right">＊=Random</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">$[f,h,*]$</td>
+<td class="org-right">280</td>
+<td class="org-right">301</td>
+<td class="org-right">287.7</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,h,\langle d \rangle,*]$</td>
+<td class="org-right">302</td>
+<td class="org-right">288</td>
+<td class="org-right">308.1</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,\hat{h},*]$</td>
+<td class="org-right">308</td>
+<td class="org-right">305</td>
+<td class="org-right">307.3</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,h,\hat{h},*]$</td>
+<td class="org-right">307</td>
+<td class="org-right">306</td>
+<td class="org-right">307.8</td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,\hat{h}^{FF},*]$</td>
+<td class="org-right">336</td>
+<td class="org-right">331</td>
+<td class="org-right"><span class="underline">337.9</span></td>
+</tr>
+
+<tr>
+<td class="org-left">$[f,\hat{h}^{FF},\langle d \rangle,*]$</td>
+<td class="org-right"><b>337</b></td>
+<td class="org-right"><b>333</b></td>
+<td class="org-right"><span class="underline">337.6</span></td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-right">(+50)</td>
+<td class="org-right">(+30)</td>
+<td class="org-right">(+50)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orgheadline27" class="outline-2">
+<h2 id="orgheadline27"><span class="section-number-2">16</span> Simple Dynamic Configuration for Overall Performance</h2>
+<div class="outline-text-2" id="text-16">
+<p>
+$[f=g+h, \hat{h}^{FF}]$&#x2014; Computing 2 different heuristics
+</p>
+
+<ul class="org-ul">
+<li>Only beneficial when the plateau is huge (especially the domain contains zerocost)</li>
+
+<li>Let's disable it when this is not the case</li>
+</ul>
+
+<p>
+IPC+Zerocost results
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left"><b>Single heuristics</b></th>
+<th scope="col" class="org-left">LMcut</th>
+<th scope="col" class="org-left">M&amp;S</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">A $[f,h,\text{lifo}]$</td>
+<td class="org-left">844</td>
+<td class="org-left">797</td>
+</tr>
+
+<tr>
+<td class="org-left">B $[f,h,\langle d \rangle,\text{lifo}]$</td>
+<td class="org-left">839</td>
+<td class="org-left">775</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left"><b>Multi heuristics</b></td>
+<td class="org-left">LMcut</td>
+<td class="org-left">M&amp;S</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">C $[f,\hat{h}^{FF},\langle d \rangle,\text{Random}]$</td>
+<td class="org-left">906.2</td>
+<td class="org-left">794.4</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">Dynamic Configuration</td>
+<td class="org-left">LMcut</td>
+<td class="org-left">M&amp;S</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">If zerocost actions exist: C ; Else B</td>
+<td class="org-left"><b>911.9</b></td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">If zerocost actions exist: C ; Else A</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left"><b>832.3</b></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orgheadline29" class="outline-2">
+<h2 id="orgheadline29"><span class="section-number-2">17</span> Completeness of A* on Infinite Graph</h2>
+<div class="outline-text-2" id="text-17">
+<p>
+Dechter and Pearl (1985): <img src="img/static/pearl-cost.png" alt="pearl-cost.png" />
+</p>
+
+<ul class="org-ul">
+<li>Results do not apply to zerocost domains</li>
+<li>Turned out, conditions for completeness depends on the tiebreaking</li>
+</ul>
+
+<p>
+(P1) If any plateau(f) for f &lt; f^∗ is infinite, then A^∗ does not terminate.
+</p>
+
+<p>
+(P2) Assume plateau(f) is finite &forall; f &lt; f^∗:
+</p>
+
+<ul class="org-ul">
+<li>Completeness depends on tiebreaking on plateau(f<sup>*</sup>)</li>
+</ul>
+</div>
+
+<div id="outline-container-orgheadline28" class="outline-3">
+<h3 id="orgheadline28"><span class="section-number-3">17.1</span> Completeness of A* on Infinite Graph</h3>
+<div class="outline-text-3" id="text-17-1">
+<p>
+(P2) Assume plateau(f) is finite &forall; f &lt; f^∗:
+</p>
+
+<p>
+Completeness depends on tiebreaking on plateau(f<sup>*</sup>)
+</p>
+
+<p>
+More specifically, <b>the completeness of satisficing search algorithm used for tiebreaking</b>
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">FIFO [f, fifo]</td>
+<td class="org-left">Complete with a finite outdegree below the minimum solution depth</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">→ because <b>Breadth-first search [fifo] requires it</b></td>
+</tr>
+
+<tr>
+<td class="org-left">LIFO [f, lifo]</td>
+<td class="org-left">Complete when plateau(f<sup>*</sup>) is also finite</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">→ because <b>Depth-First Search [lifo] requires it</b></td>
+</tr>
+
+<tr>
+<td class="org-left">Random Order [f, ro]</td>
+<td class="org-left">Probabilistically Complete</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">→ because <b>[ro] is Prob. Complete [Valenzano AAAI16]</b></td>
+</tr>
+</tbody>
+</table>
+
+<ul class="org-ul">
+<li><b>We can also carry the completeness proof over to optimal search!</b></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline30" class="outline-2">
+<h2 id="orgheadline30"><span class="section-number-2">18</span> Conclusion &amp; Future Work</h2>
+<div class="outline-text-2" id="text-18">
+<ul class="org-ul">
+<li>A* as a sequence of satisficing search on each plateau</li>
+<li>Demonstrated the use of inadmissible heuristics for optimal search</li>
+<li>Leveraged the completeness proof for satisficing search for optimal search</li>
+<li>Many potential extensions
+<ul class="org-ul">
+<li>Use <b>plateau-limited macro actions</b> (cf. Marvin, but different purpose)</li>
+<li><b>Plateau-limited monte-carlo random walk</b> (cf. Arvand)</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2017-06-16 金 11:06</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
