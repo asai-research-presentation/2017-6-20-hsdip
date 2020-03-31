@@ -187,7 +187,7 @@ Both of these are not specified in the paper.
 In other words, these details are not considered important.
 #+end_resume
 
-* In Fact, Tiebreaking is Quite Important
+* In Fact, Tiebreaking is Quite Important (AAAI16)
 
 #+begin_larger
 #+begin_center
@@ -358,12 +358,9 @@ Used in many *practical applications* w/ *key resource minimization*
   #+end_alignright
 + *Openstacks is an application domain* from Operations Research (Fink and Voss, 1999)
   #+begin_alignright
-  minimize the # of stacks, 0-cost unless consuming stacks.
+  Minimize the # of stacks, 0-cost unless consuming stacks.
   #+end_alignright
 + *Cybersec is also an application domain.* (BAMS, Boddy et. al.)
-  #+begin_alignright
-  The great talk by Joerg Hoffmann in the last ICAPS!
-  #+end_alignright
 
 #+begin_smaller
 Zerocost actions makes problems more difficult (W［2］-complete → para-NP-hard) [Aghighi,IJCAI15]
@@ -615,7 +612,7 @@ RandomDepth (AAAI16) is a variant of type-based, but *restricted within a platea
 * Reinterpret A∗ as */iterations of satisficing search on plateaus/*:
 
 + A* $[ f, h, \text{fifo} ]$  : Performing *GBFS [h, fifo] on each plateau(f)*
-+ A* $[ f, \text{fifo} ]$  : Performing a *blind breadth-first search [fifo] on each plateau(f)* and therefore slower
++ A* $[ f, \text{fifo} ]$  : *Blind breadth-first search [fifo] on each plateau(f)* and therefore slower
 
 #+begin_src bash
 while true
@@ -771,11 +768,15 @@ We created 620 zerocost instances consisting of 28 domains.
 
 $[f=g+h, \hat{h}^{FF}]$ --- Computing 2 different heuristics
 
-+ Only beneficial when the plateau is huge (especially the domain contains zerocost)
+#+begin_container-fluid
+#+begin_row-fluid
+#+begin_span6
++ *Only beneficial when the plateau is huge* (especially the domain contains zerocost actions)
 
-+ Let's disable it when this is not the case
-
-IPC+Zerocost results
++ Let's disable it otherwise
+#+end_span6
+#+begin_span6
+IPC+Zerocost results (1724) 5min,4GB
 
 |---+------------------------------------------------------+---------+---------|
 |   | *Single heuristics*                                  |   LMcut |     M&S |
@@ -784,8 +785,8 @@ IPC+Zerocost results
 |   | A $[f,h,\text{lifo}]$                                |     844 |     797 |
 | / | $[f,h,\text{Random}]$                                |   820.8 |   777.1 |
 | / | $[f,h,\langle d \rangle,\text{fifo}]$                |     855 |     789 |
-|   | B $[f,h,\langle d \rangle,\text{lifo}]$              |     839 |     775 |
-| / | $[f,h,\langle d \rangle,\text{Random}]$              |   859.5 |   793.7 |
+| / | $[f,h,\langle d \rangle,\text{lifo}]$                |     839 |     775 |
+|   | B $[f,h,\langle d \rangle,\text{Random}]$            |   859.5 |   793.7 |
 | / | [0.3em] Distance-to-Go                               |         |         |
 | / | $[f,\hh,\text{fifo}]$                                |     829 |     785 |
 | / | $[f,\hh,\text{lifo}]$                                |     837 |     780 |
@@ -808,32 +809,34 @@ IPC+Zerocost results
 |   | If zerocost actions exist: C ; Else B                | *911.9* |         |
 |   | If zerocost actions exist: C ; Else A                |         | *832.3* |
 |---+------------------------------------------------------+---------+---------|
+#+end_span6
+#+end_row-fluid
+#+end_container-fluid
 
 * Completeness of A* on Infinite Graph
 
 Dechter and Pearl (1985): [[spng:pearl-cost]]
 
-+ Results do not apply to zerocost domains
-+ Turned out, conditions for completeness depends on the tiebreaking
++ */Results do not apply to zerocost domains/*
++ Turned out, *completeness depends on the tiebreaking*
 
-(P1) If any plateau(f) for f < f^∗ is infinite, then A^∗ does not terminate.
+(P1) If any plateau($f$) for $f < f^∗$ is infinite, then $A^∗$ does not terminate.
 
-(P2) Assume plateau(f) is finite \forall f < f^∗:
+(P2) Assume plateau($f$) is finite $\forall f < f^∗$:
 
-+ Completeness depends on tiebreaking on plateau(f^*)
++ Completeness depends on tiebreaking on plateau($f=f^*$)
 
 ** Completeness of A* on Infinite Graph
 
- (P2) Assume plateau(f) is finite \forall f < f^∗:
+ (P2) Assume plateau(f) is finite $\forall f < f^∗$:
 
- Completeness depends on tiebreaking on plateau(f^*)
+ Completeness depends on tiebreaking on plateau($f=f^*$)
 
  More specifically, *the completeness of satisficing search algorithm used for tiebreaking*
   
-   |                      |                                                                   |
    | FIFO [f, fifo]       | Complete with a finite outdegree below the minimum solution depth |
    |                      | → because *Breadth-first search [fifo] requires it*              |
-   | LIFO [f, lifo]       | Complete when plateau(f^*) is also finite                         |
+   | LIFO [f, lifo]       | Complete when plateau($f=f^*$) is also finite                     |
    |                      | → because *Depth-First Search [lifo] requires it*                |
    | Random Order [f, ro] | Probabilistically Complete                                        |
    |                      | → because *[ro] is Prob. Complete [Valenzano AAAI16]*            |
@@ -842,12 +845,14 @@ Dechter and Pearl (1985): [[spng:pearl-cost]]
 
 * Conclusion & Future Work
 
-+ A* as a sequence of satisficing search on each plateau
-+ Demonstrated the use of inadmissible heuristics for optimal search
-+ Leveraged the completeness proof for satisficing search for optimal search
-+ Many potential extensions
-  + Use *plateau-limited macro actions* (cf. Marvin, but different purpose)
-  + *Plateau-limited monte-carlo random walk* (cf. Arvand)
++ A* as a *sequence of satisficing search* on each plateau
++ Demonstrated the *use of inadmissible heuristics for optimal search*
++ *Leveraged the completeness proof* for satisficing search for optimal search
++ Many potential extensions for optimal search
+  + *Plateau-limited macro actions* (cf. Marvin, but different purpose)
+  + *Plateau-limited diversified GBFS* (cf. DBFS, Type-GBFS, BWFS)
+  + *Plateau-limited preferred op, lazy eval* (cf. LAMA)
+  + *Plateau-limited Monte-Carlo Random Walk* (cf. Arvand)
 
 #  + Direct analogue for model-based planners (SAT/IP/CSP-based planners)
 
